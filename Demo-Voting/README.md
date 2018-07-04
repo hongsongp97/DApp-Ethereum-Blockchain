@@ -1,3 +1,5 @@
+Install and run Ganache
+
 Run the following commands
 
     npm install
