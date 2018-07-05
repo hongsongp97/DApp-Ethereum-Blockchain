@@ -47,7 +47,7 @@ if (warnings.length) {
 const byteCode = compiledCode.contracts[':Voting'].bytecode;
 // console.log('byteCode', byteCode);
 
-// Get contract interface
+// Get contract interface - The json interface for the contract to instantiate
 const abiDefinition = JSON.parse(compiledCode.contracts[':Voting'].interface);
 // console.log('abiDefinition:\n', abiDefinition);
 

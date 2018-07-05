@@ -34,23 +34,19 @@
       </tbody>
     </table>
   </div>
-
-  <div class="d-flex justify-content-center">
-    <select id="candidate" class="mr-3">
+  <form action="/api" method="post" id="form-vote" class="d-flex justify-content-center">
+    <select id="candidate" name="candidate" class="mr-3">
       <option>Chung</option>
       <option>Son</option>
       <option>Nguyen</option>
     </select>
-    <a href="#" onclick="voteForCandidate()" class="btn btn-primary">Vote</a>
-  </div>
+    <button class="btn btn-primary">Vote</button>
+    <!-- <a href="#" onclick="voteForCandidate()" class="btn btn-primary">Vote</a> -->
+  </form>
 
 </body>
-<script>
-  CONTRACT_ADDRESS = 'REPLACE_WITH_CONTRACT_ADDRESS';
-  ABI_DEFINITION = JSON.parse('REPLACE_WITH_ABI_DEFINITION');
-</script>
 <script src="https://cdn.rawgit.com/ethereum/web3.js/35ae85a5d30500f7df20c47594d529af872ac88a/dist/web3.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="/js/index.js"></script>
 
 </html>

@@ -4,6 +4,6 @@ Run the following commands
 
     npm install
 
-    node create.js
+    node create.js / npm run create_smart_contract
 
-    node server.js
+    node server.js / npm run start

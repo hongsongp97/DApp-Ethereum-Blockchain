@@ -1,10 +1,19 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs');
+const Web3 = require('web3');
+const asciiToHex = Web3.utils.asciiToHex;
 
 const server = express();
 
+server.use(bodyParser.urlencoded({ extended: true }))
+
+const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+let contractInstance = null;
+
 var deployedContract = null;
 var abiDefinition = null;
+
 fs.readFile('deployedContract.json', 'utf8', (err, data) => {
     if (err) {
         console.log(err);
@@ -13,25 +22,49 @@ fs.readFile('deployedContract.json', 'utf8', (err, data) => {
         // console.log(deployedContract);
         abiDefinition = deployedContract._jsonInterface;
         // console.log(abiDefinition);
+        contractInstance = new web3.eth.Contract(abiDefinition, deployedContract.options.address);
     }
 });
 
 server.get('/', (req, res) => {
-    let fileContents = '';
-    try {
-        fileContents = fs.readFileSync(__dirname + req.url, 'utf8');
-    } catch (e) {
-        fileContents = fs.readFileSync(__dirname + '/public/index.html', 'utf8');
-    }
-    res.send(
-        fileContents.replace(
-            /REPLACE_WITH_CONTRACT_ADDRESS/g,
-            deployedContract.options.address
-        ).replace(
-            /REPLACE_WITH_ABI_DEFINITION/g,
-            JSON.stringify(abiDefinition)
-        )
-    );
+    res.sendFile(__dirname + '/public/index.html');
+});
+
+server.get('/api/:candidate', (req, res) => {
+    var candidateName = req.params.candidate;
+
+    contractInstance.methods.totalVotesFor(asciiToHex(candidateName)).call()
+        .then((voteCount) => {
+            res.send({
+                'candidateName': candidateName,
+                'voteCount': voteCount
+            }
+            );
+        });
+});
+
+server.post('/api', (req, res) => {
+    var candidateName = req.body.candidate;
+
+    web3.eth.getAccounts()
+        .then((accounts) => {
+            return contractInstance.methods.voteForCandidate(asciiToHex(candidateName)).send({
+                    from: accounts[0],
+                    gas: 1500000,
+                    gasPrice: '500000000000'
+                });
+        })
+        .then(() => {
+            return contractInstance.methods.totalVotesFor(asciiToHex(candidateName)).call();
+        })
+        .then((voteCount) => {
+            res.send(
+                {
+                    'candidateName': candidateName,
+                    'voteCount': voteCount
+                }
+            );
+        });
 });
 
 server.get('/deployedContract', (req, res) => {
