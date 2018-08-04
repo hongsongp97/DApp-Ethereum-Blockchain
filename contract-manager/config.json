@@ -1,0 +1,19 @@
+{
+  "express": {
+    "port": 8008,
+    "routerMountPath": "/",
+    "partialsDirectory": "./views/partials",
+    "staticAssetsDirectory": "./public"
+  },
+  "ethereum": {
+    "rpcEndpoint": "http://deto3j-dns-reg1.southeastasia.cloudapp.azure.com:8545",
+    "defaultAccount": {
+      "address": "0xda28e141b1018a22cf88ba6353b8057fe8fdc270",
+      "password": "abcDET123456"
+    },
+    "defaultContract": {
+      "sourceFile": "./contracts/Voting.sol",
+      "descriptionFile": "./contracts/Voting.desc.json"
+    }
+  }
+}

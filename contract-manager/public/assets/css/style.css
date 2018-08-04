@@ -1,0 +1,21 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main.container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.main-content {
+    flex-grow: 1;
+    overflow: auto;
+    padding: 1em;
+}
