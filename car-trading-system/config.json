@@ -39,9 +39,9 @@
       }
     },
     "deployment": {
-      "output": {
-        "compilation": "./build/compilations/{{contract}}.json",
-        "receipt": "./build/receipts/{{contract}}-{{network}}.json"
+      "outputDirectory": {
+        "compilation": "./build/compilations",
+        "receipt": "./build/receipts"
       },
       "defaultGas": 3000000
     },
