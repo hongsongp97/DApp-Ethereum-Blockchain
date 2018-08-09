@@ -8,7 +8,7 @@ contract CarTrading {
     }
     struct Order {
         address buyerAddress;
-        bytes20 carId;
+        uint carId;
         uint value;
         OrderStatus status;
     }
@@ -19,7 +19,7 @@ contract CarTrading {
     event OrderCreated(
         uint indexed index,
         address indexed buyerAddress,
-        bytes20 indexed carId,
+        uint indexed carId,
         uint value,
         OrderStatus status
     );
@@ -54,7 +54,11 @@ contract CarTrading {
         _;
     }
 
-    function createOrder(bytes20 carId) public payable {
+    function getNumberOfOrders() public view returns (uint) {
+        return orders.length;
+    }
+
+    function createOrder(uint carId) public payable {
         Order memory newOrder = Order({
             buyerAddress: msg.sender,
             carId: carId,
