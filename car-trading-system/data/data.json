@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Lexus GX 460 - 2015",
+        "description": "Xe nhập khẩu, màu đen, máy xăng 4.6 L, số tự động, đã đi 15,000 km",
+        "price": "1025000000000000000",
+        "imageFileName": "1.jpg"
+    },
+    {
+        "name": "Mazda Cx5 2.5 AT 2WD - 2018",
+        "description": "Xe lắp ráp trong nước, màu trắng, máy xăng 2.5 L, số tự động",
+        "price": "375000000000000000",
+        "imageFileName": "2.jpg"
+    },
+    {
+        "name": "Hyundai County One - 2017",
+        "description": "Xe lắp ráp trong nước, màu đồng, máy dầu , số tay",
+        "price": "768000000000000000",
+        "imageFileName": "3.jpg"
+    },
+    {
+        "name": "Toyota Vios 1.5 MT - 2011",
+        "description": "Xe lắp ráp trong nước, màu đen, máy xăng 1.5 L, số tay, đã đi 85,000 km",
+        "price": "256000000000000000",
+        "imageFileName": "4.jpg"
+    },
+    {
+        "name": "Toyota Camry AT - 2014",
+        "description": "Xe nhập khẩu, màu bạc, máy xăng , số tay, đã đi 39,000 km",
+        "price": "699000000000000000",
+        "imageFileName": "5.jpg"
+    }
+]
