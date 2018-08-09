@@ -5,18 +5,49 @@
     "partialsDirectory": "./views/partials",
     "staticAssetsDirectory": "./public"
   },
-  "localEthereum": {
-    "rpcEndpoint": "HTTP://127.0.0.1:7545"
-  },
-  "ropstenEthereum": {
-    "rpcEndpoint": "https://ropsten.infura.io/v3/836c5137d35d4372997767864435a6cc",
-    "defaultAccount": {
-      "address": "0x7ed08552a797B58CcC2D297FB6439103b3A73db5",
-      "password": "4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd" 
+  "ethereum": {
+    "networks": {
+      "local": {
+        "rpcEndpoint": "http://127.0.0.1:7545",
+        "defaultAccount": {
+          "address": "0xE0B89Cd2aFa083EAF13d291849DD908269524087",
+          "password": "" 
+        },
+        "defaultGas": 100000,
+        "defaultGasPrice": 20000000000
+      },
+      "ropsten": {
+        "rpcEndpoint": "https://ropsten.infura.io/v3/836c5137d35d4372997767864435a6cc",
+        "defaultAccount": {
+          "address": "0x7ed08552a797B58CcC2D297FB6439103b3A73db5",
+          "password": "4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd" 
+        },
+        "defaultGas": 100000,
+        "defaultGasPrice": 20000000000
+      }
+    },
+    "contracts": {
+      "Voting": {
+        "name": "Voting",
+        "sourceFile": "./src/contracts/Voting.sol",
+        "arguments": []
+      },
+      "CarTrading": {
+        "name": "CarTrading",
+        "sourceFile": "./src/contracts/CarTrading.sol",
+        "arguments": ["0x7ed08552a797B58CcC2D297FB6439103b3A73db5"]
+      }
+    },
+    "deployment": {
+      "output": {
+        "compilation": "./build/compilations/{{contract}}.json",
+        "receipt": "./build/receipts/{{contract}}-{{network}}.json"
+      },
+      "defaultGas": 3000000
+    },
+    "default": {
+      "contract": "CarTrading",
+      "network": "local"
     }
-  },
-  "contracts": {
-    "Voting": "./src/contracts/Voting.sol",
-    "CarTradingSystem": "./src/contracts/CarTradingSystem.sol"
   }
 }
