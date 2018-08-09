@@ -1,5 +1,5 @@
 module.exports = {
     defaultConfigurationFile: './config.json',
-    defaultGas: 3000000,
+    defaultGas: 5000000,
     defaultGasPrice: 20000000000,
 };

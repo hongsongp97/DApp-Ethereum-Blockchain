@@ -1,0 +1,175 @@
+{
+  "address": "0x6e1114B6550D538F2C128C1e97101e6813bB75a9",
+  "jsonInterface": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "sellerAddress",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x3d9b2ae6"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelOrder",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function",
+      "signature": "0x514fcac7"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getContractBalance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x6f9fb98a"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "carId",
+          "type": "bytes20"
+        }
+      ],
+      "name": "createOrder",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function",
+      "signature": "0x7c3e1c1f"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "confirmOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x8ac7d79c"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "orders",
+      "outputs": [
+        {
+          "name": "buyerAddress",
+          "type": "address"
+        },
+        {
+          "name": "carId",
+          "type": "bytes20"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xa85c38ef"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_sellerAddress",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "name": "buyerAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "carId",
+          "type": "bytes20"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderCreated",
+      "type": "event",
+      "signature": "0x4ccddbac541985600be127654e7d8335ad335b8a9011f34fdccdf73e606ea512"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderCompleted",
+      "type": "event",
+      "signature": "0x2bd2d9c5f8a1215c53d8d1e6eeed2a5edde1be47f27f9d43e053043628ecb31f"
+    }
+  ]
+}

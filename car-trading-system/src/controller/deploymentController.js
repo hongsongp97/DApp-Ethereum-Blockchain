@@ -9,8 +9,9 @@ deployContract = async () => {
             rpcEndpoint: configuration.ropstenEthereum.rpcEndpoint,
             ownerAddress: configuration.ropstenEthereum.defaultAccount.address,
             ownerPassword: configuration.ropstenEthereum.defaultAccount.password,
-            contractName: "Voting",
-            contractSource: configuration.contracts.Voting
+            contractName: configuration.contracts.CarTrading.name,
+            contractSource: configuration.contracts.CarTrading.path,
+            contractArguments: configuration.contracts.CarTrading.arguments
         }).deployContract();
     } catch (err) {
         console.error(err);

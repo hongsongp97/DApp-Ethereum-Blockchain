@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "deploymentController.js",
+            "program": "${workspaceFolder}/src/controller/deploymentController.js",
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Start Server (Remote)",
             "program": "${workspaceFolder}\\server.js",
             "args": ["config.remote.json"]

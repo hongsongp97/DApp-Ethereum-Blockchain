@@ -14,12 +14,13 @@ class ContractDeployer {
      * Create a new contract deployment program.
      * @param {object} params The input parameters.
      */
-    constructor({ rpcEndpoint, ownerAddress, ownerPassword, contractName, contractSource }) {
+    constructor({ rpcEndpoint, ownerAddress, ownerPassword, contractName, contractSource, contractArguments }) {
         this._rpcEndpoint = rpcEndpoint;
         this._ownerAddress = ownerAddress;
         this._ownerPassword = ownerPassword;
         this.contractName = contractName;
         this.contractSource = contractSource;
+        this._contractArguments = contractArguments;
     }
 
     /**
@@ -69,13 +70,14 @@ class ContractDeployer {
                 await this.initWeb3();
 
                 console.info(`Attempting to deploy from account ${this._ownerAddress} ...`);
-                this._receipt = await new this._web3.eth.Contract(this._compilation._jsonInterface).deploy({
-                    data: '0x' + this._compilation._byteCode,
-                }).send({
+                this._receipt = await new this._web3.eth.Contract(this._compilation._jsonInterface, null, {
                     from: this._ownerAddress,
                     gas: params.defaultGas,
-                    gasPrice: params.defaultGasPrice
-                })
+                    gasPrice: params.defaultGasPrice,
+                    data: '0x' + this._compilation._byteCode
+                }).deploy({
+                    arguments: this._contractArguments
+                }).send();
 
                 if (this._receipt) {
                     this._successful = true;
@@ -87,7 +89,7 @@ class ContractDeployer {
                 }
                 console.log(this._message);
             } catch (err) {
-                console.error(`Deployment failed: ${err.message}`);
+                console.error(`Deployment failed: ${err}`);
             }
         }
         return this._successful;
