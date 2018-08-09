@@ -10,6 +10,153 @@ function throwUnsupportedError() {
 }
 
 /**
+ * Separate warnings and errors from an error list of compilation result.
+ * @param {Array<string>} errorList The error list.
+ * @return {object} An object that contains the warnings and errors.
+ */
+function extractWarningsAndErrors(errorList) {
+    let warnings = [];
+    let errors = [];
+    (errorList || []).forEach((err) => {
+        if (/\:\s*Warning\:/.test(err)) {
+            warnings.push(err);
+        } else {
+            errors.push(err);
+        }
+    });
+    return {warnings, errors};
+}
+
+/**
+ * A class to perform the compilation of a Solidity smart contract.
+ */
+class Compilation {
+    /**
+     * Create a new compilation.
+     * @param {string} sourceFile The path to the source file.
+     * @param {string} name The name of the contract.
+     */
+    constructor(sourceFile, name = '') {
+        this._sourceFile = sourceFile;
+        this._name = name;
+    }
+
+    /**
+     * Get the path to the source file.
+     */
+    get sourceFile() {
+        return this._sourceFile;
+    }
+
+    /**
+     * Set the path to the source file.
+     * @param {string} value The new value.
+     */
+    set sourceFile(value) {
+        this._sourceFile = value;
+    }
+
+    /**
+     * Get the name of the contract.
+     */
+    get name() {
+        return this._name;
+    }
+
+    /**
+     * Set the name of the contract.
+     * @param {string} value The new value.
+     */
+    set name(value) {
+        this._name = value;
+    }
+
+    /**
+     * Get whether the compilation was successful or not.
+     */
+    get successful() {
+        return this._successful;
+    }
+
+    /**
+     * Get the compilation result message.
+     */
+    get message() {
+        return this._message;
+    }
+
+    /**
+     * Get the list of compilation warnings.
+     */
+    get warnings() {
+        return this._warnings;
+    }
+
+    /**
+     * Get the list of compilation errors.
+     */
+    get errors() {
+        return this._errors;
+    }
+
+    /**
+     * Get the byte code of the contract if compilation was successful.
+     */
+    get byteCode() {
+        return this._byteCode;
+    }
+
+    /**
+     * Get the JSON interface of the contract if compilation was successful.
+     */
+    get jsonInterface() {
+        return this._jsonInterface;
+    }
+
+    /**
+     * Compile a Solidity smart contract asynchronously.
+     * @return {Promise<bool>} A promise that returns the success state of the compilation.
+     */
+    async compileAsync() {
+        let sourceCode = await readFileAsync(this._sourceFile, {encoding: 'ASCII'});
+        let solcResult = await solc.compile(sourceCode);
+        if (!this._name) {
+            let keys = Object.keys(solcResult.contracts)
+                    .map((key) => key.substr(1));
+            this._name = keys.length > 0 ? keys[0] : '';
+        }
+        let contract = solcResult.contracts[':' + this._name];
+        let {warnings, errors} = extractWarningsAndErrors(solcResult.errors);
+        this._warnings = warnings;
+        this._errors = errors;
+        if (contract) {
+            this._successful = true;
+            this._message = 'Compilation successful.';
+            this._byteCode = contract.bytecode;
+            this._jsonInterface = JSON.parse(contract.interface);
+        } else {
+            this._successful = false;
+            this._message = errors.length === 0
+                    ? 'Wrong contract name.'
+                    : 'Compilation failed with errors.';
+        }
+        return this._successful;
+    }
+
+    /**
+     * Compile a Solidity contract file asynchronously.
+     * @param {string} sourceFile The path to the source file.
+     * @param {string} name The name of the contract.
+     * @return {Compilation} A compilation object.
+     */
+    static async fromSourceFileAsync(sourceFile, name = '') {
+        let compilation = new Compilation(sourceFile, name);
+        await compilation.compileAsync();
+        return compilation;
+    }
+};
+
+/**
  * A class to represent an Ethereum transaction.
  */
 class Transaction {
@@ -363,6 +510,7 @@ class MethodExecutionTransaction extends Transaction {
 }
 
 module.exports = {
+    Compilation,
     Transaction,
     DeploymentTransaction,
     MethodExecutionTransaction,
