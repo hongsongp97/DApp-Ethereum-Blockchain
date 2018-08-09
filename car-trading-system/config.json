@@ -1,0 +1,22 @@
+{
+  "express": {
+    "port": 8008,
+    "routerMountPath": "/",
+    "partialsDirectory": "./views/partials",
+    "staticAssetsDirectory": "./public"
+  },
+  "localEthereum": {
+    "rpcEndpoint": "HTTP://127.0.0.1:7545"
+  },
+  "ropstenEthereum": {
+    "rpcEndpoint": "https://ropsten.infura.io/v3/836c5137d35d4372997767864435a6cc",
+    "defaultAccount": {
+      "address": "0x7ed08552a797B58CcC2D297FB6439103b3A73db5",
+      "password": "4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd" 
+    }
+  },
+  "contracts": {
+    "Voting": "./src/contracts/Voting.sol",
+    "CarTradingSystem": "./src/contracts/CarTradingSystem.sol"
+  }
+}

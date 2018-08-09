@@ -1,0 +1,369 @@
+const util = require('util');
+const solc = require('solc');
+const readFileAsync = util.promisify(require('fs').readFile);
+
+/**
+ * Throw an error to indicate that an operation is unsupported.
+ */
+function throwUnsupportedError() {
+    throw new Error('Unsupported operation.');
+}
+
+/**
+ * A class to represent an Ethereum transaction.
+ */
+class Transaction {
+    /**
+     * Create a transaction for sending.
+     * @param {object} web3 The Web3 instance to send the transaction.
+     * @param {object} params The input parameters.
+     * @param {string} params.from The address of the sending account.
+     * @param {string} params.to The address of the destinated account.
+     * @param {number} params.gas The amount of gas used for the transaction.
+     * @param {string} params.gasPrice The gas price used for the transaction.
+     * @param {string} params.value The value transferred for the transaction.
+     * @param {string} params.data The data used in contract deployment or method call.
+     * @param {number} params.nonce The nonce of the transaction.
+     * @param {bool} params.autoUnlockAccount Whether the sending account
+     * will be automatically unlocked and relocked.
+     * @param {string} params.password The password that
+     * will be used to unlock the sending account.
+     */
+    constructor(web3, params) {
+        this._web3 = web3;
+        this._from = params.from;
+        this._to = params.to;
+        this._gas = params.gas;
+        this._gasPrice = params.gasPrice;
+        this._value = params.value;
+        this._data = params.data;
+        this._nonce = params.nonce;
+        this._autoUnlockAccount = params.autoUnlockAccount || false;
+        this._password = params.password || '';
+    }
+
+    /**
+     * Get the Web3 instance to send the transaction.
+     */
+    get web3() {
+        return this._web3;
+    }
+
+    /**
+     * Get the address of the sending account.
+     */
+    get from() {
+        return this._from;
+    }
+
+    /**
+     * Get the address of the destinated account.
+     */
+    get to() {
+        return this._to;
+    }
+
+    /**
+     * Get the amount of gas used for the transaction.
+     */
+    get gas() {
+        return this._gas;
+    }
+
+    /**
+     * Get the gas price used for the transaction.
+     */
+    get gasPrice() {
+        return this._gasPrice;
+    }
+
+    /**
+     * Get the value transferred for the transaction.
+     */
+    get value() {
+        return this._value;
+    }
+
+    /**
+     * Get the data used in contract deployment or method call.
+     */
+    get data() {
+        return this._data;
+    }
+
+    /**
+     * Get the nonce of the transaction.
+     */
+    get nonce() {
+        return this._nonce;
+    }
+
+    /**
+     * Get whether the sending account
+     * will be automatically unlocked and relocked.
+     */
+    get autoUnlockAccount() {
+        return this._autoUnlockAccount;
+    }
+
+    /**
+     * Get the password that
+     * will be used to unlock the sending account.
+     */
+    get password() {
+        return this._password;
+    }
+
+    /**
+     * Try to unlock the sending account asynchronously.
+     */
+    async _tryUnlockAccountAsync() {
+        let result = false;
+        try {
+            result = await this._web3.eth.personal.unlockAccount(this._from, this._password);
+        } catch (err) {
+            console.error('Failed to unlock the account: %o', err);
+        }
+        return result;
+    }
+
+    /**
+     * Try to lock the sending account asynchronously.
+     */
+    async _tryLockAccountAsync() {
+        let result = false;
+        try {
+            result = await this._web3.eth.personal.lockAccount(this._from);
+        } catch (err) {
+            console.error('Failed to lock the account: %o', err);
+        }
+        return result;
+    }
+
+    /**
+     * Send the transaction asynchronously.
+     * @return {Promise} A promise that returns the transaction receipt.
+     */
+    async sendAsync() {
+        let unlocked = false;
+        let receipt = null;
+        try {
+            if (this._autoUnlockAccount) {
+                unlocked = await this._tryUnlockAccountAsync();
+            }
+            receipt = await this._web3.eth.sendTransaction({
+                from: this._from,
+                to: this._to,
+                value: this._value,
+                gas: this._gas,
+                gasPrice: this._gasPrice,
+                data: this._data,
+                nonce: this._nonce,
+            });
+        } finally {
+            if (unlocked) {
+                await this._tryLockAccountAsync();
+            }
+        }
+        return receipt;
+    }
+
+    /**
+     * Perform a local message call asynchronously.
+     * @return {Promise<string>} A promise that returns
+     * the result of the call as a string.
+     */
+    async callAsync() {
+        return await this._web3.eth.call({
+            from: this._from,
+            to: this._to,
+            value: this._value,
+            gas: this._gas,
+            gasPrice: this._gasPrice,
+            data: this._data,
+            nonce: this._nonce,
+        });
+    }
+}
+
+/**
+ * A class to represent an Ethereum smart contract deployment transaction.
+ */
+class DeploymentTransaction extends Transaction {
+    /**
+     * Create a deployment transaction.
+     * @param {object} web3 The Web3 instance to send the transaction.
+     * @param {object} params The input parameters.
+     * @param {object} params.jsonInterface The interface of the contract.
+     * @param {string} params.byteCode The byte code of the contract.
+     * @param {Array} params.args The arguments to initialize the contract.
+     */
+    constructor(web3, params) {
+        super(web3, params);
+        this._jsonInterface = params.jsonInterface;
+        this._byteCode = params.byteCode;
+        this._args = params.args;
+    }
+
+    /**
+     * Get the interface of the contract.
+     */
+    get jsonInterface() {
+        return this._jsonInterface;
+    }
+
+    /**
+     * Get the byte code of the contract.
+     */
+    get byteCode() {
+        return this._byteCode;
+    }
+
+    /**
+     * Get the arguments to initialize the contract.
+     */
+    get args() {
+        return this._args;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async sendAsync() {
+        let contract = new this._web3.eth.Contract(this._jsonInterface);
+        let transaction = contract.deploy({
+            data: this._byteCode.startsWith('0x')
+                    ? this._byteCode
+                    : '0x' + this._byteCode,
+            arguments: this._args,
+        });
+        let unlocked = false;
+        let receipt = null;
+        try {
+            if (this._autoUnlockAccount) {
+                unlocked = await this._tryUnlockAccountAsync();
+            }
+            receipt = await transaction.send({
+                from: this._from,
+                gas: this._gas,
+                gasPrice: this._gasPrice,
+                value: this._value,
+            });
+        } finally {
+            if (unlocked) {
+                await this._tryLockAccountAsync();
+            }
+        }
+        return receipt;
+    }
+
+    /**
+     * @inheritDoc
+     * This function is not implemented and will throw error.
+     */
+    async callAsync() {
+        throwUnsupportedError();
+    }
+}
+
+/**
+ * A class to represent a contract's method execution transaction.
+ */
+class MethodExecutionTransaction extends Transaction {
+    /**
+     * Create a method execution transaction.
+     * @param {object} web3 The Web3 instance to send the transaction.
+     * @param {object} params The input parameters.
+     * @param {object} params.jsonInterface The interface of the contract.
+     * @param {string} params.methodName The name of the method to be executed.
+     * @param {Array} params.args The arguments to be passed to the method.
+     */
+    constructor(web3, params) {
+        super(web3, params);
+        this._jsonInterface = params.jsonInterface;
+        this._methodName = params.methodName;
+        this._args = params.args;
+    }
+
+    /**
+     * Get the interface of the contract.
+     */
+    get jsonInterface() {
+        return this._jsonInterface;
+    }
+
+    /**
+     * Get the name of the method to be executed.
+     */
+    get methodName() {
+        return this._methodName;
+    }
+
+    /**
+     * Set the name of the method to be executed.
+     * @param {string} value The new method name.
+     */
+    set methodName(value) {
+        this._methodName = value;
+    }
+
+    /**
+     * Get the arguments to be passed to the method.
+     */
+    get args() {
+        return this._args;
+    }
+
+    /**
+     * Set the arguments to be passed to the method.
+     * @param {Array} value The new arguments.
+     */
+    set args(value) {
+        this._args = value || [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async sendAsync() {
+        let contract = new this._web3.eth.Contract(this._jsonInterface, this._to);
+        let transaction = contract.methods[this._methodName](...this._args);
+        let unlocked = false;
+        let receipt = null;
+        try {
+            if (this._autoUnlockAccount) {
+                unlocked = await this._tryUnlockAccountAsync();
+            }
+            receipt = await transaction.send({
+                from: this._from,
+                gas: this._gas,
+                gasPrice: this._gasPrice,
+                value: this._value,
+            });
+        } finally {
+            if (unlocked) {
+                await this._tryLockAccountAsync();
+            }
+        }
+        return receipt;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async callAsync() {
+        let contract = new this._web3.eth.Contract(this._jsonInterface, this._to);
+        let transaction = contract.methods[this._methodName](...this._args);
+        return await transaction.call({
+            from: this._from,
+            gas: this._gas,
+            gasPrice: this._gasPrice,
+        });
+    }
+}
+
+module.exports = {
+    Transaction,
+    DeploymentTransaction,
+    MethodExecutionTransaction,
+};

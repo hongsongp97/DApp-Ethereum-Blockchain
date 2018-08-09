@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const Web3 = require('web3');
 const asciiToHex = Web3.utils.asciiToHex;
 
@@ -9,22 +8,10 @@ const server = express();
 server.use(bodyParser.urlencoded({ extended: true }))
 
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
-let contractInstance = null;
+// const web3 = new Web3(new Web3.providers.HttpProvider("http://deto3j-dns-reg1.southeastasia.cloudapp.azure.com:8545/"));
 
-var deployedContract = null;
-var abiDefinition = null;
-
-fs.readFile('deployedContract.json', 'utf8', (err, data) => {
-    if (err) {
-        console.log(err);
-    } else {
-        deployedContract = JSON.parse(data);
-        // console.log(deployedContract);
-        abiDefinition = deployedContract._jsonInterface;
-        // console.log(abiDefinition);
-        contractInstance = new web3.eth.Contract(abiDefinition, deployedContract.options.address);
-    }
-});
+const compiledCode = require('./compile/compileVoting');
+const abiDefinition = JSON.parse(compiledCode.interface);
 
 server.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -33,42 +20,42 @@ server.get('/', (req, res) => {
 server.get('/api/:candidate', (req, res) => {
     var candidateName = req.params.candidate;
 
-    contractInstance.methods.totalVotesFor(asciiToHex(candidateName)).call()
+    abiDefinition.methods.totalVotesFor(asciiToHex(candidateName)).call()
         .then((voteCount) => {
+            console.log('Getting: ', candidateName + ' - ' + voteCount);
             res.send({
                 'candidateName': candidateName,
                 'voteCount': voteCount
             }
             );
-        });
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 });
 
-server.post('/api', (req, res) => {
+server.post('/api', async (req, res) => {
     var candidateName = req.body.candidate;
+    console.log('Voting for ' + candidateName);
 
-    web3.eth.getAccounts()
-        .then((accounts) => {
-            return contractInstance.methods.voteForCandidate(asciiToHex(candidateName)).send({
-                    from: accounts[0],
-                    gas: 1500000,
-                    gasPrice: '500000000000'
-                });
-        })
-        .then(() => {
-            return contractInstance.methods.totalVotesFor(asciiToHex(candidateName)).call();
-        })
-        .then((voteCount) => {
-            res.send(
-                {
-                    'candidateName': candidateName,
-                    'voteCount': voteCount
-                }
-            );
-        });
-});
+    let accounts = await web3.eth.getAccounts();
 
-server.get('/deployedContract', (req, res) => {
-    res.send(deployedContract);
+    // await web3.eth.personal.unlockAccount(accounts[2], 'ngonngon');
+
+    await abiDefinition.methods.voteForCandidate(asciiToHex(candidateName)).send({
+        from: accounts[2],
+        gas: 1000000,
+        gasPrice: web3.utils.toWei('30', 'Gwei')
+    });
+
+    let voteCount = await contractInstance.methods.totalVotesFor(asciiToHex(candidateName)).call();
+
+    res.send(
+        {
+            'candidateName': candidateName,
+            'voteCount': voteCount
+        }
+    );
 });
 
 server.get('/abiDefinition', (req, res) => {

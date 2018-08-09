@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "create_smart_contract": "node create.js",
+    "deploy-to-ganache": "node ./src/deployToGanache.js",
+    "deploy-to-testnet": "node ./src/deployToTestnet.js",
     "start": "node server.js"
   },
   "author": "",
@@ -14,6 +15,8 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "solc": "^0.4.24",
+    "truffle-hdwallet-provider": "0.0.6",
+    "truffle-hdwallet-provider-privkey": "^0.3.0",
     "web3": "^1.0.0-beta.34"
   }
 }

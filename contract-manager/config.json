@@ -6,9 +6,9 @@
     "staticAssetsDirectory": "./public"
   },
   "ethereum": {
-    "rpcEndpoint": "http://deto3j-dns-reg1.southeastasia.cloudapp.azure.com:8545",
+    "rpcEndpoint": "HTTP://127.0.0.1:7545",
     "defaultAccount": {
-      "address": "0xda28e141b1018a22cf88ba6353b8057fe8fdc270",
+      "address": "0xEc6897186955F3882f0F81d4A0B4c017DE8ae100",
       "password": "abcDET123456"
     },
     "defaultContract": {

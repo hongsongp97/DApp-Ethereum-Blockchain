@@ -22,7 +22,7 @@ contract Voting {
      *  When deploying the contract, we will pass an array of candidates
      *  who will be contesting in the election
      */
-    constructor(bytes32[] candidateNames) public {
+    constructor(bytes32[] candidateNames) public payable {
         candidateList = candidateNames;
     }
 
@@ -32,8 +32,8 @@ contract Voting {
         return votesReceived[candidate];
     }
 
-    // This function increments the vote count for the specified candidate. This
-    // is equivalent to casting a vote
+    // This function increments the vote count for the specified candidate.
+    // This is equivalent to casting a vote
     function voteForCandidate(bytes32 candidate) public {
         if (validCandidate(candidate) == false) revert();
         votesReceived[candidate] += 1;
@@ -46,5 +46,13 @@ contract Voting {
             }
         }
         return false;
+    }
+
+    function addCandidate(bytes32 candidate) public {
+        candidateList.push(candidate);
+    }
+
+    function getCandidateCount() public view returns (uint256) {
+        return candidateList.length;
     }
 }

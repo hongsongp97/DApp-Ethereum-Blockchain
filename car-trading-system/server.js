@@ -1,11 +1,11 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
-const constants = require('./modules/constants');
-const core = require('./modules/core');
+const constants = require('./src/modules/default-params');
+const core = require('./src/modules/core');
 const Web3 = require('web3');
-const VotingManager = require('./modules/voting-manager');
-const MainController = require('./modules/main-controller');
+const VotingManager = require('./src/modules/voting-manager');
+const MainController = require('./src/modules/main-controller');
 
 /**
  * A class that contains the logic of the voting application.
@@ -23,7 +23,7 @@ class VotingApplication {
      * Initialize Web3 instance.
      */
     _initializeWeb3() {
-        let provider = new Web3.providers.HttpProvider(this.configuration.ethereum.rpcEndpoint);
+        let provider = new Web3.providers.HttpProvider(this.configuration.ropstenEthereum.rpcEndpoint);
         this.web3 = new Web3(provider);
     }
 

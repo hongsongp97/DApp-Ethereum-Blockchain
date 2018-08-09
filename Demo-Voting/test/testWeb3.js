@@ -2,8 +2,8 @@ const Web3 = require('web3');
 const fs = require('fs');
 const solc = require('solc');
 
-// const provider = new Web3.providers.HttpProvider("http://localhost:7545")
-const provider = new Web3.providers.HttpProvider("http://deto3j-dns-reg1.southeastasia.cloudapp.azure.com:8545/")
+const provider = new Web3.providers.HttpProvider("http://localhost:7545")
+// const provider = new Web3.providers.HttpProvider("http://deto3j-dns-reg1.southeastasia.cloudapp.azure.com:8545/")
 const web3 = new Web3(provider);
 const asciiToHex = Web3.utils.asciiToHex;
 

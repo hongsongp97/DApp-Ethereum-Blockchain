@@ -1,0 +1,54 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start Server (Remote)",
+            "program": "${workspaceFolder}\\server.js",
+            "args": ["config.remote.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start Server (Local)",
+            "program": "${workspaceFolder}\\server.js",
+            "args": ["config.local.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "console": "externalTerminal",
+            "name": "Deploy Contract (Remote)",
+            "program": "${workspaceFolder}\\deploy-contract.js",
+            "args": ["config.remote.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "console": "externalTerminal",
+            "name": "Deploy Contract (Local)",
+            "program": "${workspaceFolder}\\deploy-contract.js",
+            "args": ["config.local.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "console": "externalTerminal",
+            "name": "Test Method (Remote)",
+            "program": "${workspaceFolder}\\test-method.js",
+            "args": ["config.remote.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "console": "externalTerminal",
+            "name": "Test Method (Local)",
+            "program": "${workspaceFolder}\\test-method.js",
+            "args": ["config.local.json"]
+        }
+    ]
+}
