@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+const path = require('path');
 const HDWalletProvider = require('truffle-hdwallet-provider-privkey');
 
 const ContractCompiler = require('../entity/ContractCompiler');
@@ -104,8 +105,12 @@ class ContractDeployer {
             jsonInterface: this._receipt.options.jsonInterface,
         };
         try {
-            await core.writeObjectAsync(description, `./build/receipt/${this._compilation.name}.json`);
-            console.log(`Receipt was saved in: build/receipt/${this._compilation.name}.json`);
+            let configration = core.loadConfiguration(
+                process.argv[2] || path.resolve(params.defaultConfigurationFile)
+            );
+            let outputDirectory = configration.ethereum.deployment.outputDirectory.receipt;
+            await core.writeObjectAsync(description, outputDirectory + `${this._compilation.name}.json`);
+            console.log('Receipt was saved in: ' + outputDirectory + `${this._compilation.name}.json`);
         }
         catch (err) {
             console.error(`Failed to write transaction receipt: ${err.message}`);

@@ -120,8 +120,13 @@ class ContractCompiler {
     async generateCompiledFile() {
         // Generate deployedContract.json file to save the S.Contract generated
         try {
-            await core.writeObjectAsync(this._compiledCode, `./build/compile/${this.name}.json`);
-            console.log(`Code compilation was saved in: build/compile/${this.name}.json`);
+            let configration = core.loadConfiguration(
+                process.argv[2] || path.resolve(params.defaultConfigurationFile)
+            );
+            let outputDirectory = configration.ethereum.deployment.outputDirectory.compilation;
+
+            await core.writeObjectAsync(this._compiledCode, outputDirectory + `${this.name}.json`);
+            console.log('Code compilation was saved in: ' + outputDirectory +  `${this.name}.json`);
         } catch (err) {
             console.log(err);
         }

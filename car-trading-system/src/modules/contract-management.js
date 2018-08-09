@@ -513,5 +513,5 @@ module.exports = {
     Compilation,
     Transaction,
     DeploymentTransaction,
-    MethodExecutionTransaction,
+    MethodExecutionTransaction
 };
