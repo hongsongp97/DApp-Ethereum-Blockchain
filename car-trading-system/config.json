@@ -20,7 +20,7 @@
         "rpcEndpoint": "https://ropsten.infura.io/v3/836c5137d35d4372997767864435a6cc",
         "defaultAccount": {
           "address": "0x7ed08552a797B58CcC2D297FB6439103b3A73db5",
-          "password": "4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd"
+          "password": "0x4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd"
         },
         "defaultGas": 100000,
         "defaultGasPrice": 20000000000

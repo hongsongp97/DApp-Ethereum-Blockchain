@@ -1,6 +1,5 @@
 const Web3 = require('web3');
 const path = require('path');
-const HDWalletProvider = require('truffle-hdwallet-provider-privkey');
 
 const ContractCompiler = require('../entity/ContractCompiler');
 
@@ -38,15 +37,30 @@ class ContractDeployer {
         return this._message;
     }
 
-    setProvider(rpcEndpoint, privateKey) {
-        let privateKeys = [];
-        privateKeys.push(privateKey);
-        this._provider = new HDWalletProvider(privateKeys, rpcEndpoint);
+    setProvider(rpcEndpoint) {
+        this._provider = new Web3.providers.HttpProvider(rpcEndpoint);
     }
 
     initWeb3() {
-        this.setProvider(this._rpcEndpoint, this._ownerPassword);
         this._web3 = new Web3(this._provider);
+    }
+
+    async addAccount(privateKey) {
+        let account = await this._web3.eth.accounts.wallet.add({ privateKey: privateKey });
+        return this.isUnlocked(account) ? true : false;
+    }
+
+    async isUnlocked(account) {
+        try {
+            await web3.eth.sign("", account.address, account.privateKey);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    async removeAccount(address) {
+        await this._web3.eth.accounts.wallet.remove(address);
     }
 
     /**
@@ -67,8 +81,9 @@ class ContractDeployer {
 
         if (this._compilation.successful) {
             try {
-                await this.setProvider(this._rpcEndpoint, this._ownerPassword);
+                await this.setProvider(this._rpcEndpoint);
                 await this.initWeb3();
+                await this.addAccount(this._ownerPassword);
 
                 console.info(`Attempting to deploy from account ${this._ownerAddress} ...`);
                 this._receipt = await new this._web3.eth.Contract(this._compilation._jsonInterface, null, {
@@ -91,6 +106,8 @@ class ContractDeployer {
                 console.log(this._message);
             } catch (err) {
                 console.error(`Deployment failed: ${err}`);
+            } finally {
+                await this.removeAccount(this._ownerAddress);
             }
         }
         return this._successful;

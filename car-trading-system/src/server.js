@@ -1,16 +1,16 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
-const constants = require('./src/modules/default-params');
-const core = require('./src/modules/core');
+const constants = require('./modules/default-params');
+const core = require('./modules/core');
 const Web3 = require('web3');
-const VotingManager = require('./src/modules/voting-manager');
-const MainController = require('./src/modules/main-controller');
+const VotingManager = require('./modules/voting-manager');
+const MainController = require('./modules/main-controller');
 
 /**
  * A class that contains the logic of the voting application.
  */
-class VotingApplication {
+class CarTradingApplication {
     /**
      * Create a new voting application.
      * @param {object} configuration The configuration.
@@ -69,8 +69,8 @@ class VotingApplication {
      * Initialize dependencies.
      */
     async initializeDependenciesAsync() {
-        this._initializeWeb3();
-        await this._initializeVotingManagerAsync();
+        // this._initializeWeb3();
+        // await this._initializeVotingManagerAsync();
         this._initializeMainController();
         this._initializeExpressServer();
     }
@@ -124,7 +124,7 @@ async function main() {
             process.argv[2] || path.resolve(constants.defaultConfigurationFile)
         );
         await configureHandlebarsEngineAsync(configuration.express.partialsDirectory);
-        await new VotingApplication(configuration).runAsync();
+        await new CarTradingApplication(configuration).runAsync();
     } catch (err) {
         console.error(err);
     }

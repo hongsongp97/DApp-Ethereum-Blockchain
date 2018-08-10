@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy-contract": "node ./src/controller/deploymentController.js config.json",
-    "start": "node server.js"
+    "start": "node ./src/server.js"
   },
   "author": "nguyenlc1993",
   "license": "ISC",
@@ -19,8 +19,6 @@
     "handlebars-layouts": "^3.1.4",
     "hbs": "^4.0.1",
     "solc": "^0.4.24",
-    "truffle-hdwallet-provider": "0.0.6",
-    "truffle-hdwallet-provider-privkey": "^0.3.0",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
