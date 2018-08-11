@@ -13,10 +13,12 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "circular-json": "^0.5.5",
+    "etherscan-api": "^8.1.2",
     "express": "^4.16.3",
     "solc": "^0.4.24",
     "truffle-hdwallet-provider": "0.0.6",
     "truffle-hdwallet-provider-privkey": "^0.3.0",
-    "web3": "^1.0.0-beta.34"
+    "web3": "^1.0.0-beta.31"
   }
 }

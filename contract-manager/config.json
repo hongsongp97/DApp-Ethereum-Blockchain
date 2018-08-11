@@ -8,8 +8,8 @@
   "ethereum": {
     "rpcEndpoint": "HTTP://127.0.0.1:7545",
     "defaultAccount": {
-      "address": "0xEc6897186955F3882f0F81d4A0B4c017DE8ae100",
-      "password": "abcDET123456"
+      "address": "0x5Fb239C42a5d02b89904045AF5C9716d2A5e0F06",
+      "password": ""
     },
     "defaultContract": {
       "sourceFile": "./contracts/Voting.sol",
