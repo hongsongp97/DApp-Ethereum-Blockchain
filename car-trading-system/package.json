@@ -1,14 +1,14 @@
 {
-  "name": "demovoting2",
+  "name": "car-trading-system",
   "version": "1.0.0",
   "description": "A sample voting app using Ethereum blockchain",
-  "main": "index.js",
+  "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy-contract": "node ./src/controller/deploymentController.js config.json",
     "start": "node ./src/server.js"
   },
-  "author": "nguyenlc1993",
+  "author": "BlockchainTeam",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
