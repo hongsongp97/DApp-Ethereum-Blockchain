@@ -168,13 +168,11 @@ class Transaction {
      * @param {string} params.to The address of the destinated account.
      * @param {number} params.gas The amount of gas used for the transaction.
      * @param {string} params.gasPrice The gas price used for the transaction.
-     * @param {string} params.value The value transferred for the transaction.
+     * @param {number|string} params.value The value transferred for the transaction.
      * @param {string} params.data The data used in contract deployment or method call.
      * @param {number} params.nonce The nonce of the transaction.
-     * @param {bool} params.autoUnlockAccount Whether the sending account
-     * will be automatically unlocked and relocked.
-     * @param {string} params.password The password that
-     * will be used to unlock the sending account.
+     * @param {string} params.privateKey The private key that
+     * will be used to sign the transaction.
      */
     constructor(web3, params) {
         this._web3 = web3;
@@ -185,8 +183,7 @@ class Transaction {
         this._value = params.value;
         this._data = params.data;
         this._nonce = params.nonce;
-        this._autoUnlockAccount = params.autoUnlockAccount || false;
-        this._password = params.password || '';
+        this._privateKey = params.privateKey;
     }
 
     /**
@@ -197,10 +194,26 @@ class Transaction {
     }
 
     /**
+     * Set the Web3 instance to send the transaction.
+     * @param {object} value The new Web3 instance.
+     */
+    set web3(value) {
+        this._web3 = value;
+    }
+
+    /**
      * Get the address of the sending account.
      */
     get from() {
         return this._from;
+    }
+
+    /**
+     * Set the address of the sending account.
+     * @param {string} value The new address.
+     */
+    set from(value) {
+        this._from = value;
     }
 
     /**
@@ -211,10 +224,26 @@ class Transaction {
     }
 
     /**
+     * Set the address of the destinated account.
+     * @param {string} value The new address.
+     */
+    set to(value) {
+        this._to = value;
+    }
+
+    /**
      * Get the amount of gas used for the transaction.
      */
     get gas() {
         return this._gas;
+    }
+
+    /**
+     * Set the amount of gas used for the transaction.
+     * @param {number|string} value The new gas.
+     */
+    set gas(value) {
+        this._gas = value;
     }
 
     /**
@@ -225,10 +254,26 @@ class Transaction {
     }
 
     /**
-     * Get the value transferred for the transaction.
+     * Set the gas price used for the transaction.
+     * @param {number|string} value The new gas price.
+     */
+    set gasPrice(value) {
+        this._gasPrice = value;
+    }
+
+    /**
+     * Get the value transferred with the transaction.
      */
     get value() {
         return this._value;
+    }
+
+    /**
+     * Set the value transferred with the transaction.
+     * @param {number|string} value The new value.
+     */
+    set value(value) {
+        this._value = value;
     }
 
     /**
@@ -239,6 +284,14 @@ class Transaction {
     }
 
     /**
+     * Set the data used in contract deployment or method call.
+     * @param {number} value The new data.
+     */
+    set data(value) {
+        this._data = value;
+    }
+
+    /**
      * Get the nonce of the transaction.
      */
     get nonce() {
@@ -246,45 +299,44 @@ class Transaction {
     }
 
     /**
-     * Get whether the sending account
-     * will be automatically unlocked and relocked.
+     * Set the nonce of the transaction.
+     * @param {number} value The new nonce.
      */
-    get autoUnlockAccount() {
-        return this._autoUnlockAccount;
+    set nonce(value) {
+        this._nonce = value;
     }
 
     /**
-     * Get the password that
-     * will be used to unlock the sending account.
+     * Get the private key that
+     * will be used to sign the transaction.
      */
-    get password() {
-        return this._password;
+    get privateKey() {
+        return this._privateKey;
     }
 
     /**
-     * Try to unlock the sending account asynchronously.
+     * Set the private key that
+     * will be used to sign the transaction.
+     * @param {string} value The new private key.
      */
-    async _tryUnlockAccountAsync() {
-        let result = false;
-        try {
-            result = await this._web3.eth.personal.unlockAccount(this._from, this._password);
-        } catch (err) {
-            console.error('Failed to unlock the account: %o', err);
-        }
-        return result;
+    set privateKey(value) {
+        this._privateKey = value;
     }
 
     /**
-     * Try to lock the sending account asynchronously.
+     * Underlying logic for sending transaction.
+     * @return {Promise} A promise that returns the transaction receipt.
      */
-    async _tryLockAccountAsync() {
-        let result = false;
-        try {
-            result = await this._web3.eth.personal.lockAccount(this._from);
-        } catch (err) {
-            console.error('Failed to lock the account: %o', err);
-        }
-        return result;
+    async _sendTransactionAsync() {
+        return await this._web3.eth.sendTransaction({
+            from: this._from,
+            to: this._to,
+            value: this._value,
+            gas: this._gas,
+            gasPrice: this._gasPrice,
+            data: this._data,
+            nonce: this._nonce,
+        });
     }
 
     /**
@@ -292,25 +344,12 @@ class Transaction {
      * @return {Promise} A promise that returns the transaction receipt.
      */
     async sendAsync() {
-        let unlocked = false;
         let receipt = null;
         try {
-            if (this._autoUnlockAccount) {
-                unlocked = await this._tryUnlockAccountAsync();
-            }
-            receipt = await this._web3.eth.sendTransaction({
-                from: this._from,
-                to: this._to,
-                value: this._value,
-                gas: this._gas,
-                gasPrice: this._gasPrice,
-                data: this._data,
-                nonce: this._nonce,
-            });
+            this._web3.eth.accounts.wallet.add(this._privateKey);
+            receipt = await this._sendTransactionAsync();
         } finally {
-            if (unlocked) {
-                await this._tryLockAccountAsync();
-            }
+            this._web3.eth.accounts.wallet.clear();
         }
         return receipt;
     }
@@ -360,10 +399,26 @@ class DeploymentTransaction extends Transaction {
     }
 
     /**
+     * Set the interface of the contract.
+     * @param {object} value The new interface.
+     */
+    set jsonInterface(value) {
+        this._jsonInterface = value;
+    }
+
+    /**
      * Get the byte code of the contract.
      */
     get byteCode() {
         return this._byteCode;
+    }
+
+    /**
+     * Set the byte code of the contract.
+     * @param {string} value The new byte code.
+     */
+    set byteCode(value) {
+        this._byteCode = value;
     }
 
     /**
@@ -374,9 +429,17 @@ class DeploymentTransaction extends Transaction {
     }
 
     /**
+     * Set the arguments to initialize the contract.
+     * @param {Array} value The new arguments.
+     */
+    set args(value) {
+        this._args = value || [];
+    }
+
+    /**
      * @inheritDoc
      */
-    async sendAsync() {
+    async _sendTransactionAsync() {
         let contract = new this._web3.eth.Contract(this._jsonInterface);
         let transaction = contract.deploy({
             data: this._byteCode.startsWith('0x')
@@ -384,24 +447,12 @@ class DeploymentTransaction extends Transaction {
                     : '0x' + this._byteCode,
             arguments: this._args,
         });
-        let unlocked = false;
-        let receipt = null;
-        try {
-            if (this._autoUnlockAccount) {
-                unlocked = await this._tryUnlockAccountAsync();
-            }
-            receipt = await transaction.send({
-                from: this._from,
-                gas: this._gas,
-                gasPrice: this._gasPrice,
-                value: this._value,
-            });
-        } finally {
-            if (unlocked) {
-                await this._tryLockAccountAsync();
-            }
-        }
-        return receipt;
+        return await transaction.send({
+            from: this._from,
+            gas: this._gas,
+            gasPrice: this._gasPrice,
+            value: this._value,
+        });
     }
 
     /**
@@ -440,6 +491,14 @@ class MethodExecutionTransaction extends Transaction {
     }
 
     /**
+     * Set the interface of the contract.
+     * @param {object} value The new interface.
+     */
+    set jsonInterface(value) {
+        this._jsonInterface = value;
+    }
+
+    /**
      * Get the name of the method to be executed.
      */
     get methodName() {
@@ -472,27 +531,15 @@ class MethodExecutionTransaction extends Transaction {
     /**
      * @inheritDoc
      */
-    async sendAsync() {
+    async _sendTransactionAsync() {
         let contract = new this._web3.eth.Contract(this._jsonInterface, this._to);
         let transaction = contract.methods[this._methodName](...this._args);
-        let unlocked = false;
-        let receipt = null;
-        try {
-            if (this._autoUnlockAccount) {
-                unlocked = await this._tryUnlockAccountAsync();
-            }
-            receipt = await transaction.send({
-                from: this._from,
-                gas: this._gas,
-                gasPrice: this._gasPrice,
-                value: this._value,
-            });
-        } finally {
-            if (unlocked) {
-                await this._tryLockAccountAsync();
-            }
-        }
-        return receipt;
+        return await transaction.send({
+            from: this._from,
+            gas: this._gas,
+            gasPrice: this._gasPrice,
+            value: this._value,
+        });
     }
 
     /**
@@ -513,5 +560,5 @@ module.exports = {
     Compilation,
     Transaction,
     DeploymentTransaction,
-    MethodExecutionTransaction
+    MethodExecutionTransaction,
 };
