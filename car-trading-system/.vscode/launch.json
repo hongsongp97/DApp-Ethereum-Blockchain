@@ -15,14 +15,14 @@
             "type": "node",
             "request": "launch",
             "name": "Start Server (Remote)",
-            "program": "${workspaceFolder}\\server.js",
+            "program": "${workspaceFolder}/src/server.js",
             "args": ["config.remote.json"]
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Start Server (Local)",
-            "program": "${workspaceFolder}\\server.js",
+            "program": "${workspaceFolder}/src/server.js",
             "args": ["config.local.json"]
         },
         {
@@ -30,7 +30,7 @@
             "request": "launch",
             "console": "externalTerminal",
             "name": "Deploy Contract (Remote)",
-            "program": "${workspaceFolder}\\deploy-contract.js",
+            "program": "${workspaceFolder}/src/deploy-contract.js",
             "args": ["config.remote.json"]
         },
         {
@@ -38,7 +38,7 @@
             "request": "launch",
             "console": "externalTerminal",
             "name": "Deploy Contract (Local)",
-            "program": "${workspaceFolder}\\deploy-contract.js",
+            "program": "${workspaceFolder}/src/deploy-contract.js",
             "args": ["config.local.json"]
         },
         {
@@ -46,7 +46,7 @@
             "request": "launch",
             "console": "externalTerminal",
             "name": "Test Method (Remote)",
-            "program": "${workspaceFolder}\\test-method.js",
+            "program": "${workspaceFolder}/src/test-method.js",
             "args": ["config.remote.json"]
         },
         {
@@ -54,7 +54,7 @@
             "request": "launch",
             "console": "externalTerminal",
             "name": "Test Method (Local)",
-            "program": "${workspaceFolder}\\test-method.js",
+            "program": "${workspaceFolder}/src/test-method.js",
             "args": ["config.local.json"]
         }
     ]
