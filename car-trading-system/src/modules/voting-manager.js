@@ -10,15 +10,14 @@ class VotingManager {
      * @param {*} params The input parameters.
      */
     constructor({web3, contractAddress, jsonInterface,
-            ownerAddress, ownerPassword,
+            ownerAddress, ownerPrivateKey,
             gas = constants.defaultGas, gasPrice = constants.defaultGasPrice}) {
         this.transaction = new contractManagement.MethodExecutionTransaction(web3, {
             from: ownerAddress,
             to: contractAddress,
             gas: gas,
             gasPrice: gasPrice,
-            autoUnlockAccount: true,
-            password: ownerPassword,
+            privateKey: ownerPrivateKey,
             jsonInterface: jsonInterface,
             methodName: '',
             args: [],

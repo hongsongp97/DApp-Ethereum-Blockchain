@@ -37,7 +37,7 @@ class CarTradingApplication {
             contractAddress: description.address,
             jsonInterface: description.jsonInterface,
             ownerAddress: this.configuration.ethereum.defaultAccount.address,
-            ownerPassword: this.configuration.ethereum.defaultAccount.password,
+            ownerPrivateKey: this.configuration.ethereum.defaultAccount.privateKey,
         });
     }
 

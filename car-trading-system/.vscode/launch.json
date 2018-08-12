@@ -56,6 +56,13 @@
             "name": "Test Method (Local)",
             "program": "${workspaceFolder}/src/test-method.js",
             "args": ["config.local.json"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Test CarTradingManager (Local)",
+            "program": "${workspaceFolder}/src/test/test-car-trading-manager.js",
+            "args": ["config.local.json"]
         }
     ]
 }

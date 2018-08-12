@@ -1,6 +1,6 @@
 const path = require('path');
 const Web3 = require('web3');
-const constants = require('./modules/constants');
+const defaultParams = require('./modules/default-params');
 const core = require('./modules/core');
 const contractManagement = require('./modules/contract-management');
 
@@ -10,18 +10,52 @@ const contractManagement = require('./modules/contract-management');
 class MethodTestingProgram {
     /**
      * Create a new method testing program.
-     * @param {object} params The input parameters.
+     * @param {object} configuration The configuration.
      */
-    constructor({rpcEndpoint, descriptionFile, ownerAddress, ownerPassword,
-                gas = constants.defaultGas, gasPrice = constants.defaultGasPrice}) {
-        let provider = new Web3.providers.HttpProvider(rpcEndpoint);
-        this.web3 = new Web3(provider);
-        this.descriptionFile = descriptionFile;
-        this.ownerAddress = ownerAddress;
-        this.ownerPassword = ownerPassword;
-        this.gas = gas;
-        this.gasPrice = gasPrice;
+    constructor(configuration) {
+        this.configuration = configuration;
+    }
 
+    /**
+     * Get default target.
+     */
+    get defaultTarget() {
+        return this.configuration.ethereum.default;
+    }
+
+    /**
+     * Get default network.
+     */
+    get defaultNetwork() {
+        return this.configuration.ethereum.networks[this.defaultTarget.network];
+    }
+
+    /**
+     * Get default contract.
+     */
+    get defaultContract() {
+        return this.configuration.ethereum.contracts[this.defaultTarget.contract];
+    }
+
+    /**
+     * Get deployment configuration.
+     */
+    get deploymentConfig() {
+        return this.configuration.ethereum.deployment;
+    }
+
+    /**
+     * Initialize Web3.
+     */
+    initWeb3() {
+        let provider = new Web3.providers.HttpProvider(this.defaultNetwork.rpcEndpoint);
+        this.web3 = new Web3(provider);
+    }
+
+    /**
+     * Initialize IO.
+     */
+    initIO() {
         this.io = new core.IO(process.stdin, process.stdout);
     }
 
@@ -39,16 +73,15 @@ class MethodTestingProgram {
      * Load the contract description file.
      */
     async loadContractDescriptionAsync() {
-        let description = await core.readObjectAsync(path.resolve(this.descriptionFile));
-        this.contractAddress = description.address;
-        this.jsonInterface = description.jsonInterface;
-    }
+        let receiptFileAbsPath = path.resolve(path.join(
+            this.deploymentConfig.outputDirectory.receipt,
+            `${this.defaultTarget.contract}-${this.defaultTarget.network}.json`
+        ));
+        let receipt = await core.readObjectAsync(receiptFileAbsPath);
+        this.contractAddress = receipt.address;
+        this.jsonInterface = receipt.jsonInterface;
 
-    /**
-     * Print contract description.
-     */
-    printContractDescription() {
-        this.io.println(`Contract description loaded from ${path.resolve(this.descriptionFile)}`);
+        this.io.println(`Contract description loaded from ${receiptFileAbsPath}`);
         this.io.println(`Contract address: ${this.contractAddress}`);
     }
 
@@ -92,6 +125,19 @@ class MethodTestingProgram {
     }
 
     /**
+     * Check if method is payable.
+     * @param {string} methodName The method name.
+     * @return {boolean} A boolean indicating whether the method is payable or not.
+     */
+    isPayable(methodName) {
+        let methodDesc = this.getMethodDescription(methodName);
+        if (!methodDesc) {
+            throw new Error('Method is not defined in the interface.');
+        }
+        return methodDesc.payable;
+    }
+
+    /**
      * Parse command.
      * @param {string} command The command.
      * @return {object} An object that includes the method name and arguments.
@@ -121,12 +167,32 @@ class MethodTestingProgram {
      * @return {string} The processed result as string.
      */
     processResult(result) {
+        if (result === undefined) {
+            return 'undefined';
+        }
+        if (result === null) {
+            return 'null';
+        }
         if (typeof(result) === 'object') {
             let keys = Object.keys(result);
             keys.filter((key) => /^\d/.test(key)).forEach((key) => delete result[key]);
             return JSON.stringify(result);
         }
         return result.toString();
+    }
+
+    /**
+     * Print the transaction receipt.
+     * @param {object} receipt The transaction receipt.
+     */
+    printReceipt(receipt) {
+        this.io.println(`Transaction hash: ${receipt.transactionHash}`);
+        let events = receipt.events;
+        if (events) {
+            let eventNames = Object.keys(events);
+            this.io.println(`Events: ${eventNames.length}`);
+            eventNames.forEach((name) => this.io.println(`\t${name}: ${this.processResult(events[name].returnValues)}`));
+        }
     }
 
     /**
@@ -141,26 +207,52 @@ class MethodTestingProgram {
                 }
                 let {methodName, args} = this.parseCommand(command);
                 this.verifyMethodExecutionParams(methodName, args);
-                let transaction = new contractManagement.MethodExecutionTransaction(this.web3, {
-                    from: this.ownerAddress,
-                    to: this.contractAddress,
-                    gas: this.gas,
-                    gasPrice: this.gasPrice,
-                    autoUnlockAccount: true,
-                    password: this.ownerPassword,
-                    jsonInterface: this.jsonInterface,
-                    methodName: methodName,
-                    args: args,
-                });
+                let transaction = null;
                 switch (this.getMethodExecutionType(methodName)) {
                     case 'call':
+                        transaction = new contractManagement.MethodExecutionTransaction(this.web3, {
+                            to: this.contractAddress,
+                            gas: this.defaultNetwork.defaultGas,
+                            gasPrice: this.defaultNetwork.defaultGasPrice,
+                            jsonInterface: this.jsonInterface,
+                            methodName: methodName,
+                            args: args,
+                        });
                         let result = await transaction.callAsync();
                         result = this.processResult(result);
                         this.io.println(result);
                         break;
                     case 'send':
+                        let value = '0';
+                        if (this.isPayable(methodName)) {
+                            value = await this.io.readLineAsync('Enter value (leave blank for 0): ');
+                            if (!value) {
+                                value = '0';
+                            } else if (!/^\d+$/.test(value)) {
+                                throw new Error('Value must be a non-negative integer.');
+                            }
+                        }
+                        let address = await this.io.readLineAsync('Enter address (leave blank for default account): ');
+                        let privateKey = '';
+                        if (address) {
+                            privateKey = await this.io.readLineAsync('Enter private key: ');
+                        } else {
+                            address = this.defaultNetwork.defaultAccount.address;
+                            privateKey = this.defaultNetwork.defaultAccount.privateKey;
+                        }
+                        transaction = new contractManagement.MethodExecutionTransaction(this.web3, {
+                            from: address,
+                            to: this.contractAddress,
+                            gas: this.defaultNetwork.defaultGas,
+                            gasPrice: this.defaultNetwork.defaultGasPrice,
+                            value: value,
+                            privateKey: privateKey,
+                            jsonInterface: this.jsonInterface,
+                            methodName: methodName,
+                            args: args,
+                        });
                         let receipt = await transaction.sendAsync();
-                        this.io.println(`Transaction hash: ${receipt.transactionHash}`);
+                        this.printReceipt(receipt);
                         break;
                     default:
                         throw new Error('Could not determine execution type.');
@@ -176,9 +268,10 @@ class MethodTestingProgram {
      */
     async runAsync() {
         try {
+            this.initIO();
+            this.initWeb3();
             await this.printNetworkInfoAsync();
             await this.loadContractDescriptionAsync();
-            this.printContractDescription();
             this.io.println();
             await this.runReplAsync();
             this.io.println('Exitting program...');
@@ -194,14 +287,9 @@ class MethodTestingProgram {
 async function main() {
     try {
         let configuration = core.loadConfiguration(
-            process.argv[2] || path.resolve(constants.defaultConfigurationFile)
+            process.argv[2] || path.resolve(defaultParams.defaultConfigurationFile)
         );
-        await new MethodTestingProgram({
-            rpcEndpoint: configuration.ethereum.rpcEndpoint,
-            descriptionFile: configuration.ethereum.defaultContract.descriptionFile,
-            ownerAddress: configuration.ethereum.defaultAccount.address,
-            ownerPassword: configuration.ethereum.defaultAccount.password,
-        }).runAsync();
+        await new MethodTestingProgram(configuration).runAsync();
     } catch (err) {
         console.error(err);
     }
