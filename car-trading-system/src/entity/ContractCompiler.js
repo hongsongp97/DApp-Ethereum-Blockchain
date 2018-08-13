@@ -102,18 +102,20 @@ class ContractCompiler {
 
         let contract = this._compiledCode.contracts[':' + this.name];
 
+
         if (contract) {
             this._successful = true;
             this._message = 'Compiled code successfully!';
             this._byteCode = contract.bytecode;
             this._jsonInterface = JSON.parse(contract.interface);
-            this.generateCompiledFile();
+            await this.logCompilationResult();
+            await this.generateCompiledFile();
         } else {
             this._successful = false;
             this._message = errors.length === 0
                 ? 'Wrong contract name.' : 'Compilation failed with errors.';
+            await this.logCompilationResult();
         }
-        this.logCompilationResult();
         return this._successful;
     }
 
@@ -126,7 +128,7 @@ class ContractCompiler {
             let outputDirectory = configration.ethereum.deployment.outputDirectory.compilation;
 
             await core.writeObjectAsync(this._compiledCode, outputDirectory + `${this.name}.json`);
-            console.log('Code compilation was saved in: ' + outputDirectory +  `${this.name}.json`);
+            console.log('Code compilation was saved in: ' + outputDirectory + `${this.name}.json`);
         } catch (err) {
             console.log(err);
         }

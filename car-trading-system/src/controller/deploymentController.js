@@ -16,7 +16,7 @@ deployContract = async () => {
         await new ContractDeployer({
             rpcEndpoint: defaultNetwork.rpcEndpoint,
             ownerAddress: defaultNetwork.defaultAccount.address,
-            ownerPassword: defaultNetwork.defaultAccount.password,
+            ownerPassword: defaultNetwork.defaultAccount.privateKey,
             contractName: defaultContract.name,
             contractSource: defaultContract.sourceFile,
             contractArguments: defaultContract.arguments
