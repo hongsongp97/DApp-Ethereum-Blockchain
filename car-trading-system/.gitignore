@@ -15,8 +15,11 @@ yarn-error.log*
 # Dependency directories
 node_modules/
 
+# Build directory
+build
+
 # Contract description files
 contracts/*.desc.json
 
-# Local configuration file
-config.local.json
+# Additional configuration files
+config.*.json

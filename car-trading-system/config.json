@@ -12,18 +12,18 @@
         "rpcEndpoint": "http://127.0.0.1:7545",
         "defaultAccount": {
           "address": "0xE0B89Cd2aFa083EAF13d291849DD908269524087",
-          "password": ""
+          "privateKey": "0xe42cb1ecfce6239ecce8577582639db3ffa6fb51e975d96d5f9aa10a8ebf7cab"
         },
-        "defaultGas": 100000,
+        "defaultGas": 1000000,
         "defaultGasPrice": 20000000000
       },
       "ropsten": {
         "rpcEndpoint": "https://ropsten.infura.io/v3/836c5137d35d4372997767864435a6cc",
         "defaultAccount": {
           "address": "0x7ed08552a797B58CcC2D297FB6439103b3A73db5",
-          "password": "0x4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd"
+          "privateKey": "0x4c54f0453dc294005ba7c38944e84074c9e69399d06f8f60109de627fc678fdd"
         },
-        "defaultGas": 100000,
+        "defaultGas": 1000000,
         "defaultGasPrice": 20000000000
       }
     },
@@ -46,7 +46,7 @@
         "compilation": "./build/compilations/",
         "receipt": "./build/receipts/"
       },
-      "defaultGas": 3000000
+      "defaultGas": 5000000
     },
     "default": {
       "contract": "CarTrading",

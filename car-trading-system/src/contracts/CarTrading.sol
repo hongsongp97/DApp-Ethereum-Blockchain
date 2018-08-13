@@ -89,7 +89,7 @@ contract CarTrading {
         emit OrderCompleted(index, OrderStatus.Cancelled);
     }
 
-    function getContractBalance() public view senderMustBeSeller returns (uint) {
+    function getContractBalance() public view returns (uint) {
         return address(this).balance;
     }
 }
