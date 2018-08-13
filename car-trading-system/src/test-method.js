@@ -173,6 +173,9 @@ class MethodTestingProgram {
         if (result === null) {
             return 'null';
         }
+        if (Array.isArray(result)) {
+            return JSON.stringify(result);
+        }
         if (typeof(result) === 'object') {
             let keys = Object.keys(result);
             keys.filter((key) => /^\d/.test(key)).forEach((key) => delete result[key]);
