@@ -4,7 +4,8 @@
     "routerMountPath": "/",
     "viewsDirectory": "./src/views",
     "partialsDirectory": "./src/views/partials",
-    "staticAssetsDirectory": "./src/public"
+    "staticAssetsDirectory": "./src/public",
+    "dataDirectory": "./data"
   },
   "ethereum": {
     "networks": {

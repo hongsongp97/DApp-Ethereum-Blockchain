@@ -20,11 +20,23 @@ main.container {
     padding: 1em;
 }
 
-.btn-buy {
-    position: absolute;
-    bottom: 20px;
+.car-area {
+    margin-top: 30px;
+}
+
+.card-title {
+    height: 50px;
+}
+
+.card-text {
+    height: 90px;
 }
 
 .price {
-    padding-bottom: 30px;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.btn-buy {
+    width: 100%;
 }

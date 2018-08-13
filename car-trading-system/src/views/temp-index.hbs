@@ -1,18 +1,18 @@
 {{#extend "base" title='Demo Voting - Error'}} {{#content "main-content"}}
 <div class="car-area d-flex justify-content-around">
-    {{#each cars}}
-    <div class="card mx-1" style="width: 18rem;">
-        <img class="card-img-top" src="/assets/images/{{this.imageFileName}}" alt="Card image cap">
+    {{#each cars}} {{#gt this.remainingCar "0"}}
+    <div class="card mx-1">
+        <img class="card-img-top" src="/images/{{this.imageFileName}}" alt="Card image cap">
         <div class="card-body">
             <form action="" method="POST">
                 <h5 class="card-title">{{this.name}}</h5>
                 <p class="card-text">{{this.description}}</p>
-                <p class="price">{{this.price}} ether</p>
-                <button href="#" class="btn btn-primary btn-buy">Go somewhere</a>
+                <p class="price">Price: {{this.price}} ether</p>
+                <button href="#" class="btn btn-info btn-buy">Buy</a>
             </form>
         </div>
 
     </div>
-    {{/each}}
+    {{/gt}} {{/each}}
 </div>
 {{/content}} {{/extend}}

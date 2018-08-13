@@ -34,6 +34,9 @@ class CarTradingApplication {
         this.server.use(express.static(
             path.resolve(this.configuration.express.staticAssetsDirectory)
         ));
+        this.server.use(express.static(
+            path.resolve(this.configuration.express.dataDirectory)
+        ));
         this.server.use(this.configuration.express.routerMountPath, this.mainController.router);
         this.server.use((err, req, res, next) => {
             res.status(500);
