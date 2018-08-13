@@ -3,6 +3,15 @@ const contractManagement = require('./contract-management');
 const OrderStatus = ['Pending', 'Succeeded', 'Cancelled'];
 
 /**
+ * Convert string array to integer array.
+ * @param {Array<string>} arr The string array.
+ * @return {Array<number>} The integer array.
+ */
+function stringArrayToIntegerArray(arr) {
+    return arr.map((value) => parseInt(value));
+}
+
+/**
  * A class that interacts with the CarTrading smart contract.
  */
 class CarTradingManager {
@@ -13,13 +22,29 @@ class CarTradingManager {
      */
     constructor({web3, contractAddress, jsonInterface,
         gas, gasPrice}) {
-        this.transaction = new contractManagement.MethodExecutionTransaction(web3, {
-            to: contractAddress,
-            gas: gas,
-            gasPrice: gasPrice,
-            jsonInterface: jsonInterface,
-            methodName: '',
-            args: [],
+            this.web3 = web3;
+            this.contractAddress = contractAddress;
+            this.jsonInterface = jsonInterface;
+            this.gas = gas;
+            this.gasPrice = gasPrice;
+    }
+
+    /**
+     * Create a transaction.
+     * @param {*} params The input parameters.
+     * @return {*} The transaction.
+     */
+    createTransaction({methodName, args = [], value = 0, from, privateKey}) {
+        return new contractManagement.MethodExecutionTransaction(this.web3, {
+            from: from,
+            to: this.contractAddress,
+            gas: this.gas,
+            gasPrice: this.gasPrice,
+            value: value,
+            jsonInterface: this.jsonInterface,
+            methodName: methodName,
+            args: args,
+            privateKey: privateKey,
         });
     }
 
@@ -29,12 +54,10 @@ class CarTradingManager {
      * @return {Promise<number>} A promise that returns the number of orders.
      */
     async getNumberOfOrdersAsync() {
-        this.transaction.from = '';
-        this.transaction.privateKey = '';
-        this.transaction.value = 0;
-        this.transaction.methodName = 'getNumberOfOrders';
-        this.transaction.args = [];
-        let result = await this.transaction.callAsync();
+        let transaction = this.createTransaction({
+            methodName: 'getNumberOfOrders',
+        });
+        let result = await transaction.callAsync();
         return parseInt(result);
     }
 
@@ -45,12 +68,11 @@ class CarTradingManager {
      * @return {Promise<object>} A promise that return the order's information.
      */
     async getOrderAsync(index) {
-        this.transaction.from = '';
-        this.transaction.privateKey = '';
-        this.transaction.value = 0;
-        this.transaction.methodName = 'orders';
-        this.transaction.args = [index];
-        let result = await this.transaction.callAsync();
+        let transaction = this.createTransaction({
+            methodName: 'orders',
+            args: [index],
+        });
+        let result = await transaction.callAsync();
         return {
             index: index,
             buyerAddress: result.buyerAddress,
@@ -61,17 +83,56 @@ class CarTradingManager {
     }
 
     /**
+     * Get orders by indices.
+     * @param {Array} indices The indices.
+     */
+    async getOrdersByIndicesAsync(indices) {
+        let promises = indices.map((index) => this.getOrderAsync(index));
+        let orders = await Promise.all(promises);
+        return orders;
+    }
+
+    /**
+     * Get all orders.
+     */
+    async getAllOrdersAsync() {
+        let numberOfOrders = await this.getNumberOfOrdersAsync();
+        let indices = [...Array(numberOfOrders).keys()];
+        return await this.getOrdersByIndicesAsync(indices);
+    }
+
+    /**
+     * Get order indices by buyer.
+     * @param {string} buyerAddress The buyer's address
+     */
+    async getOrderIndicesByBuyerAsync(buyerAddress) {
+        let transaction = this.createTransaction({
+            methodName: 'getOrderIndicesByBuyer',
+            args: [buyerAddress],
+        });
+        let result = await transaction.callAsync();
+        return stringArrayToIntegerArray(result);
+    }
+
+    /**
+     * Get orders by buyer.
+     * @param {string} buyerAddress The buyer's address.
+     */
+    async getOrdersByBuyerAsync(buyerAddress) {
+        let indices = await this.getOrderIndicesByBuyerAsync(buyerAddress);
+        return await this.getOrdersByIndicesAsync(indices);
+    }
+
+    /**
      * Get seller's address.
      *
      * @return {Promise<string>} A promise that returns the seller's address.
      */
     async getSellerAddressAsync() {
-        this.transaction.from = '';
-        this.transaction.privateKey = '';
-        this.transaction.value = 0;
-        this.transaction.methodName = 'sellerAddress';
-        this.transaction.args = [];
-        let result = await this.transaction.callAsync();
+        let transaction = this.createTransaction({
+            methodName: 'sellerAddress',
+        });
+        let result = await transaction.callAsync();
         return result;
     }
 
@@ -92,12 +153,14 @@ class CarTradingManager {
      * @return {Promise<object>} A promise that return the new order's information.
      */
     async createOrderAsync({carId, value, buyerAddress, privateKey}) {
-        this.transaction.from = buyerAddress;
-        this.transaction.privateKey = privateKey;
-        this.transaction.value = value;
-        this.transaction.methodName = 'createOrder';
-        this.transaction.args = [carId];
-        let receipt = await this.transaction.sendAsync();
+        let transaction = this.createTransaction({
+            methodName: 'createOrder',
+            args: [carId],
+            value: value,
+            from: buyerAddress,
+            privateKey: privateKey,
+        });
+        let receipt = await transaction.sendAsync();
         let returnValues = receipt.events['OrderCreated'].returnValues;
         return {
             index: parseInt(returnValues.index),
@@ -125,12 +188,13 @@ class CarTradingManager {
      * @return {Promise<object>} A promise that return the updated status of the order.
      */
     async confirmOrderAsync({index, buyerAddress, privateKey}) {
-        this.transaction.from = buyerAddress;
-        this.transaction.privateKey = privateKey;
-        this.transaction.value = 0;
-        this.transaction.methodName = 'confirmOrder';
-        this.transaction.args = [index];
-        let receipt = await this.transaction.sendAsync();
+        let transaction = this.createTransaction({
+            methodName: 'confirmOrder',
+            args: [index],
+            from: buyerAddress,
+            privateKey: privateKey,
+        });
+        let receipt = await transaction.sendAsync();
         let returnValues = receipt.events['OrderCompleted'].returnValues;
         return {
             index: parseInt(returnValues.index),
@@ -157,12 +221,13 @@ class CarTradingManager {
      * @return {Promise<object>} A promise that return the updated status of the order.
      */
     async cancelOrderAsync({index, value, sellerAddress, privateKey}) {
-        this.transaction.from = sellerAddress;
-        this.transaction.privateKey = privateKey;
-        this.transaction.value = value;
-        this.transaction.methodName = 'cancelOrder';
-        this.transaction.args = [index];
-        let receipt = await this.transaction.sendAsync();
+        let transaction = this.createTransaction({
+            methodName: 'cancelOrder',
+            args: [index],
+            from: sellerAddress,
+            privateKey: privateKey,
+        });
+        let receipt = await transaction.sendAsync();
         let returnValues = receipt.events['OrderCompleted'].returnValues;
         return {
             index: parseInt(returnValues.index),
@@ -182,12 +247,10 @@ class CarTradingManager {
      * @return {Promise<string>} A promise that return the contract account's balance.
      */
     async getContractBalanceAsync() {
-        this.transaction.from = '';
-        this.transaction.privateKey = '';
-        this.transaction.value = 0;
-        this.transaction.methodName = 'getContractBalance';
-        this.transaction.args = [];
-        let result = await this.transaction.callAsync();
+        let transaction = this.createTransaction({
+            methodName: 'getContractBalance',
+        });
+        let result = await transaction.callAsync();
         return result;
     }
 }

@@ -128,6 +128,8 @@ class CarTradingManagerTest {
             assert.strictEqual(sellerAddress, '0xE0B89Cd2aFa083EAF13d291849DD908269524087');
             let contractBalance = await this.carTradingManager.getContractBalanceAsync();
             assert.strictEqual(contractBalance, '0');
+            let indices = await this.carTradingManager.getOrderIndicesByBuyerAsync('0xfC25653E400fa3Fc74F051B35b68587A2210606b');
+            assert.strictEqual(indices.length, 0);
         });
         passed += await performTestAsync('Test 2', async () => {
             let result = await this.carTradingManager.createOrderAsync({
@@ -147,6 +149,17 @@ class CarTradingManagerTest {
             assert.strictEqual(numberOfOrders, 1);
             let newOrder = await this.carTradingManager.getOrderAsync(0);
             assert.deepStrictEqual(newOrder, {
+                index: 0,
+                carId: 1,
+                value: '1000000000000000000',
+                buyerAddress: '0xfC25653E400fa3Fc74F051B35b68587A2210606b',
+                status: 'Pending',
+            });
+            let indices = await this.carTradingManager.getOrderIndicesByBuyerAsync('0xfC25653E400fa3Fc74F051B35b68587A2210606b');
+            assert.deepStrictEqual(indices, [0]);
+            let buyerOrders = await this.carTradingManager.getOrdersByBuyerAsync('0xfC25653E400fa3Fc74F051B35b68587A2210606b');
+            assert.strictEqual(buyerOrders.length, 1);
+            assert.deepStrictEqual(buyerOrders[0], {
                 index: 0,
                 carId: 1,
                 value: '1000000000000000000',
@@ -189,6 +202,17 @@ class CarTradingManagerTest {
             assert.strictEqual(numberOfOrders, 2);
             let newOrder = await this.carTradingManager.getOrderAsync(1);
             assert.deepStrictEqual(newOrder, {
+                index: 1,
+                carId: 2,
+                value: '1200000000000000000',
+                buyerAddress: '0xE798f6149bad997Eff3301D2180a53fb268b4413',
+                status: 'Pending',
+            });
+            let indices = await this.carTradingManager.getOrderIndicesByBuyerAsync('0xE798f6149bad997Eff3301D2180a53fb268b4413');
+            assert.deepStrictEqual(indices, [1]);
+            let buyerOrders = await this.carTradingManager.getOrdersByBuyerAsync('0xE798f6149bad997Eff3301D2180a53fb268b4413');
+            assert.strictEqual(buyerOrders.length, 1);
+            assert.deepStrictEqual(buyerOrders[0], {
                 index: 1,
                 carId: 2,
                 value: '1200000000000000000',
