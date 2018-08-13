@@ -4,12 +4,10 @@
     <div class="card mx-1">
         <img class="card-img-top" src="/images/{{this.imageFileName}}" alt="Card image cap">
         <div class="card-body">
-            <form action="" method="POST">
-                <h5 class="card-title">{{this.name}}</h5>
-                <p class="card-text">{{this.description}}</p>
-                <p class="price">Price: {{this.price}} ether</p>
-                <button href="#" class="btn btn-info btn-buy">Buy</a>
-            </form>
+            <h5 class="card-title">{{this.name}}</h5>
+            <p class="card-text">{{this.description}}</p>
+            <p class="price">Price: {{this.price}} ether</p>
+            <a href="/buy/{{this.carID}}/{{this.price}}" ><button class="btn btn-info btn-buy">Buy</button></a>
         </div>
 
     </div>

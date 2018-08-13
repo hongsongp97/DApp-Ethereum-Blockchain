@@ -3,6 +3,7 @@ const express = require('express');
 const hbs = require('hbs');
 const core = require('./modules/core');
 const MainController = require('./modules/temp-main-controller');
+const CarTradingManager = require('./modules/car-trading-manager');
 
 /**
  * A class that contains the logic of the voting application.
@@ -17,10 +18,30 @@ class CarTradingApplication {
     }
 
     /**
+     * Initialize car trading manager.
+     */
+    async _initializeCarTradingManagerAsync() {
+        this.default = this.configuration.ethereum.default;
+        let description = await core.readObjectAsync(
+            path.resolve(
+                path.join(this.configuration.ethereum.deployment.outputDirectory.receipt,
+                    `${this.default.contract}-${this.default.network}.json`)
+            )
+        );
+        this.carTradingManager = new CarTradingManager({
+            web3: this.web3,
+            contractAddress: description.address,
+            jsonInterface: description.jsonInterface,
+            ownerAddress: this.configuration.ethereum.networks[this.default.network].defaultAccount.address,
+            ownerPrivateKey: this.configuration.ethereum.networks[this.default.network].defaultAccount.privateKey,
+        });
+    }
+
+    /**
      * Initialize main controller.
      */
     _initializeMainController() {
-        this.mainController = new MainController(this.votingManager);
+        this.mainController = new MainController(this.carTradingManager);
     }
 
     /**
@@ -28,7 +49,7 @@ class CarTradingApplication {
      */
     _initializeExpressServer() {
         this.server = express();
-        this.server.use(express.urlencoded({extended: false}));
+        this.server.use(express.urlencoded({ extended: false }));
         this.server.set('views', path.resolve(this.configuration.express.viewsDirectory));
         this.server.set('view engine', 'hbs');
         this.server.use(express.static(
@@ -40,7 +61,7 @@ class CarTradingApplication {
         this.server.use(this.configuration.express.routerMountPath, this.mainController.router);
         this.server.use((err, req, res, next) => {
             res.status(500);
-            res.render('error', {message: err.message});
+            res.render('error', { message: err.message });
         });
     }
 
@@ -48,6 +69,7 @@ class CarTradingApplication {
      * Initialize dependencies.
      */
     async initializeDependenciesAsync() {
+        await this._initializeCarTradingManagerAsync();
         this._initializeMainController();
         this._initializeExpressServer();
     }
