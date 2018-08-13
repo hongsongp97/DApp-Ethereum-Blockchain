@@ -1,4 +1,5 @@
 pragma solidity ^0.4.24;
+pragma experimental ABIEncoderV2;
 
 contract CarTrading {
     enum OrderStatus {
@@ -91,5 +92,64 @@ contract CarTrading {
 
     function getContractBalance() public view returns (uint) {
         return address(this).balance;
+    }
+
+    function getOrderIndicesByBuyer(address buyerAddress) public view returns (uint[]) {
+        uint count = 0;
+        uint i = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].buyerAddress == buyerAddress) {
+                count++;
+            }
+        }
+        uint[] memory filteredIndices = new uint[](count);
+        count = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].buyerAddress == buyerAddress) {
+                filteredIndices[count] = i;
+                count++;
+            }
+        }
+        return filteredIndices;
+    }
+
+    function getPendingOrderIndices() public view returns (uint[]) {
+        uint count = 0;
+        uint i = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].status == OrderStatus.Pending) {
+                count++;
+            }
+        }
+        uint[] memory filteredIndices = new uint[](count);
+        count = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].status == OrderStatus.Pending) {
+                filteredIndices[count] = i;
+                count++;
+            }
+        }
+        return filteredIndices;
+    }
+
+    function getPendingOrderIndicesByBuyer(address buyerAddress) public view returns (uint[]) {
+        uint count = 0;
+        uint i = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].buyerAddress == buyerAddress
+                    && orders[i].status == OrderStatus.Pending) {
+                count++;
+            }
+        }
+        uint[] memory filteredIndices = new uint[](count);
+        count = 0;
+        for (i = 0; i < orders.length; i++) {
+            if (orders[i].buyerAddress == buyerAddress
+                    && orders[i].status == OrderStatus.Pending) {
+                filteredIndices[count] = i;
+                count++;
+            }
+        }
+        return filteredIndices;
     }
 }
