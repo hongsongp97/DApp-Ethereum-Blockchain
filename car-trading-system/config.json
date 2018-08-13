@@ -2,8 +2,9 @@
   "express": {
     "port": 8008,
     "routerMountPath": "/",
-    "partialsDirectory": "./views/partials",
-    "staticAssetsDirectory": "./public"
+    "viewsDirectory": "./src/views",
+    "partialsDirectory": "./src/views/partials",
+    "staticAssetsDirectory": "./src/public"
   },
   "ethereum": {
     "networks": {
