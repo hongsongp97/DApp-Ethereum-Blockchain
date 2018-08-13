@@ -17,20 +17,6 @@ class CarTradingApplication {
     }
 
     /**
-     * Initialize voting manager.
-     */
-    async _initializeVotingManagerAsync() {
-        let description = await core.readObjectAsync(path.resolve(this.configuration.ethereum.defaultContract.descriptionFile));
-        this.votingManager = new VotingManager({
-            web3: this.web3,
-            contractAddress: description.address,
-            jsonInterface: description.jsonInterface,
-            ownerAddress: this.configuration.ethereum.defaultAccount.address,
-            ownerPassword: this.configuration.ethereum.defaultAccount.password,
-        });
-    }
-
-    /**
      * Initialize main controller.
      */
     _initializeMainController() {
@@ -101,7 +87,6 @@ async function configureHandlebarsEngineAsync(partialsDirectory) {
     });
     require('handlebars-layouts').register(hbs.handlebars);
 }
-
 
 /**
  * Main function.

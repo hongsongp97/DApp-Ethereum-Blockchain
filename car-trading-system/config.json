@@ -46,7 +46,7 @@
         "compilation": "./build/compilations/",
         "receipt": "./build/receipts/"
       },
-      "defaultGas": 5000000
+      "defaultGas": 3000000
     },
     "default": {
       "contract": "CarTrading",

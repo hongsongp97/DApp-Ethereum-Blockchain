@@ -5,8 +5,9 @@
   "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy-contract": "node ./src/controller/deploymentController.js config.json",
-    "start": "node ./src/server.js"
+    "deploy-contract": "nodemon ./src/controller/deploymentController.js config.json",
+    "start": "nodemon ./src/server.js",
+    "tempServer": "nodemon ./src/tempServer.js"
   },
   "author": "BlockchainTeam",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "handlebars-helpers": "^0.10.0",
     "handlebars-layouts": "^3.1.4",
     "hbs": "^4.0.1",
+    "nodemon": "^1.18.3",
     "solc": "^0.4.24",
     "web3": "^1.0.0-beta.34"
   },

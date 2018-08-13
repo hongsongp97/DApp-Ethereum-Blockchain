@@ -19,3 +19,12 @@ main.container {
     overflow: auto;
     padding: 1em;
 }
+
+.btn-buy {
+    position: absolute;
+    bottom: 20px;
+}
+
+.price {
+    padding-bottom: 30px;
+}
