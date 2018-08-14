@@ -28,17 +28,17 @@ class MainController {
         this.router.get('/', async (req, res) => {
             res.render('temp-index', { name: 'base', cars });
         });
-        this.router.get('/buy/:carID/:price', async (req, res) => {
-            let carID = req.params.carID;
+        this.router.get('/buy/:carId/:price', async (req, res) => {
+            let carId = req.params.carId;
             let price = req.params.price;
-            res.render('buy', { name: 'base',  carID});
+            res.render('buy', { name: 'base',  carId});
         });
-        this.router.post('/buy/:carID', async (req, res) => {
-            let carID = req.params.carID;
+        this.router.post('/buy/:carId', async (req, res) => {
+            let carId = req.params.carId;
             let price = req.params.price;
             let address = req.body.account;
             let privateKey = req.body.privateKey;
-            this.carTradingManager.createOrderAsync(carID, price, address, privakey);
+            this.carTradingManager.createOrderAsync(carId, price, address, privakey);
             res.redirect('/');
         });
         this.router.get('/search', async (req, res) => {
