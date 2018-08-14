@@ -35,6 +35,16 @@ class CarDao {
     async saveAsync() {
         await core.writeObjectAsync(this.cars, this.dataFileName);
     }
+
+    /**
+     * Create a CarDao and load data from file.
+     * @param {string} dataFileName The data file.
+     */
+    static async loadFromFileAsync(dataFileName) {
+        let carDao = new CarDao(dataFileName);
+        await carDao.loadAsync();
+        return carDao;
+    }
 }
 
 module.exports = CarDao;
