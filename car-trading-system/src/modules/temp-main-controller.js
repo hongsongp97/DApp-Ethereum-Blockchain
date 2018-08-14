@@ -29,8 +29,8 @@ class MainController {
         this.router.get('/', async (req, res) => {
             res.render('temp-index', { name: 'base', cars });
         });
-        this.router.get('/buy/:carID/:price', async (req, res) => {
-            let carID = req.params.carID;
+        this.router.get('/buy/:carId/:price', async (req, res) => {
+            let carId = req.params.carId;
             let price = req.params.price;
             res.render('buy', { name: 'base', carID, price });
         });
