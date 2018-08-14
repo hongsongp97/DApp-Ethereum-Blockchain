@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const Web3 = require('web3');
 const core = require('./modules/core');
 const MainController = require('./modules/temp-main-controller');
 const CarTradingManager = require('./modules/car-trading-manager');
@@ -18,6 +19,16 @@ class CarTradingApplication {
     }
 
     /**
+     * Initialize Web3 instance.
+     */
+    _initializeWeb3() {
+        let provider = new Web3.providers.HttpProvider(
+            this.configuration.ethereum.networks[this.configuration.ethereum.default.network].rpcEndpoint
+        );
+        this.web3 = new Web3(provider);
+    }
+
+    /**
      * Initialize car trading manager.
      */
     async _initializeCarTradingManagerAsync() {
@@ -32,8 +43,8 @@ class CarTradingApplication {
             web3: this.web3,
             contractAddress: description.address,
             jsonInterface: description.jsonInterface,
-            ownerAddress: this.configuration.ethereum.networks[this.default.network].defaultAccount.address,
-            ownerPrivateKey: this.configuration.ethereum.networks[this.default.network].defaultAccount.privateKey,
+            gas: this.configuration.ethereum.networks[this.default.network].defaultGas,
+            gasPrice: this.configuration.ethereum.networks[this.default.network].defaultGasPrice
         });
     }
 
@@ -61,6 +72,7 @@ class CarTradingApplication {
         this.server.use(this.configuration.express.routerMountPath, this.mainController.router);
         this.server.use((err, req, res, next) => {
             res.status(500);
+            console.log(err);
             res.render('error', { message: err.message });
         });
     }
@@ -69,6 +81,7 @@ class CarTradingApplication {
      * Initialize dependencies.
      */
     async initializeDependenciesAsync() {
+        this._initializeWeb3();
         await this._initializeCarTradingManagerAsync();
         this._initializeMainController();
         this._initializeExpressServer();

@@ -1,6 +1,7 @@
 const express = require('express');
 require('express-async-errors');
-const core = require('./core')
+const core = require('./core');
+const Web3 = require('web3');
 const CarTradingManager = require('./car-trading-manager');
 
 
@@ -31,14 +32,27 @@ class MainController {
         this.router.get('/buy/:carID/:price', async (req, res) => {
             let carID = req.params.carID;
             let price = req.params.price;
-            res.render('buy', { name: 'base',  carID});
+            res.render('buy', { name: 'base', carID, price });
         });
-        this.router.post('/buy/:carID', async (req, res) => {
+        this.router.post('/buy/:carID/:price', async (req, res) => {
             let carID = req.params.carID;
-            let price = req.params.price;
-            let address = req.body.account;
+            let price = Web3.utils.toWei(req.params.price, 'ether');
+            let address = req.body.address;
             let privateKey = req.body.privateKey;
-            this.carTradingManager.createOrderAsync(carID, price, address, privakey);
+
+            let order = {
+                carId: carID,
+                value: price,
+                buyerAddress: address,
+                privateKey: privateKey
+            }
+            try {
+                let log = await this.carTradingManager.createOrderAsync(order);
+                console.log(log);
+            }
+            catch (err) {
+                console.log(err);
+            }
             res.redirect('/');
         });
         this.router.get('/search', async (req, res) => {
@@ -47,7 +61,7 @@ class MainController {
         this.router.post('/search', async (req, res) => {
             let address = req.body.address;
             let orders = this.carTradingManager.searchOrderByAddress(address);
-            res.render('search', { name: 'base', orders: orders});
+            res.render('search', { name: 'base', orders: orders });
         });
     }
 }
