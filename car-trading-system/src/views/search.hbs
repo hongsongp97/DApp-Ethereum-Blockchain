@@ -13,21 +13,21 @@
         </form>
     </nav>
 </div>
-{{#unlessGt orders null}}
+{{!-- {{#unlessGt orders null}} --}}
 <div class="searching-result">
     <table class="table table-hover">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
-                <th>Price</th>
+                <th>Price (ether)</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
             {{#each orders}}
             <tr>
-                <td>{{add @index 0}}</td>
+                <td>{{add @index 1}}</td>
                 <td>{{this.name}}</td>
                 <td>{{this.price}}</td>
                 <td>{{this.status}}</td>
@@ -36,4 +36,5 @@
         </tbody>
     </table>
 </div>
-{{/unlessGt}} {{/content}} {{/extend}}
+{{!-- {{/unlessGt}}  --}}
+{{/content}} {{/extend}}

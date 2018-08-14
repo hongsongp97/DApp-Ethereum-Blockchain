@@ -26,9 +26,11 @@ class MainController {
      */
     async _setupRoutes() {
         let cars = await core.readObjectAsync('./data/data.json');
+
         this.router.get('/', async (req, res) => {
             res.render('temp-index', { name: 'base', cars });
         });
+
         this.router.get('/buy/:carId/:price', async (req, res) => {
             let carId = req.params.carId;
             let price = req.params.price;
@@ -56,12 +58,21 @@ class MainController {
             }
             res.redirect('/');
         });
+
         this.router.get('/search', async (req, res) => {
             res.render('search', { name: 'base' });
         });
         this.router.post('/search', async (req, res) => {
             let address = req.body.address;
-            let orders = this.carTradingManager.searchOrderByAddress(address);
+            console.log(`Search orders by address: ${address}`);
+            // let orders = this.carTradingManager.searchOrderByAddress(address);
+            let orders = [
+                {
+                    name: 'ngon',
+                    price: '1.2',
+                    status: 'Pending'
+                }
+            ];
             res.render('search', { name: 'base', orders: orders });
         });
     }
