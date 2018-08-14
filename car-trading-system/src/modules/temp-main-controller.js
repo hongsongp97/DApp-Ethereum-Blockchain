@@ -32,19 +32,20 @@ class MainController {
         this.router.get('/buy/:carId/:price', async (req, res) => {
             let carId = req.params.carId;
             let price = req.params.price;
-            res.render('buy', { name: 'base', carID, price });
+            res.render('buy', { name: 'base', carId, price });
         });
-        this.router.post('/buy/:carID/:price', async (req, res) => {
-            let carID = req.params.carID;
+        this.router.post('/buy/:carId/:price', async (req, res) => {
+            let carId = req.params.carId;
             let price = Web3.utils.toWei(req.params.price, 'ether');
             let address = req.body.address;
             let privateKey = req.body.privateKey;
 
             let order = {
-                carId: carID,
+                carId: carId,
                 value: price,
                 buyerAddress: address,
-                privateKey: privateKey
+                privateKey: privateKey.startsWith('0x')
+                    ? privateKey : '0x' + privateKey
             }
             try {
                 let log = await this.carTradingManager.createOrderAsync(order);
