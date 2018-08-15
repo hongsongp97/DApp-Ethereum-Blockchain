@@ -5,15 +5,18 @@
   "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy-contract": "nodemon ./src/controller/deploymentController.js config.json",
-    "start": "nodemon ./src/server.js",
-    "tempServer": "nodemon ./src/tempServer.js"
+    "deploy-contract": "nodemon ./src/deploy-contract.js",
+    "test-method": "nodemon ./src/test-method.js",
+    "server": "nodemon ./src/server.js"
   },
   "author": "BlockchainTeam",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "ethereumjs-util": "^5.2.0",
     "express": "^4.16.3",
     "express-async-errors": "^3.0.0",
+    "express-session": "^1.15.6",
     "handlebars": "^4.0.11",
     "handlebars-helper-ternary": "^1.0.0",
     "handlebars-helpers": "^0.10.0",

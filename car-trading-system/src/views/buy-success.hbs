@@ -1,0 +1,32 @@
+{{#extend "base" title='Car Trading System - Order Submitted'}} {{#content "main-content"}}
+<h1>Order Submitted</h1>
+<p>Your order has been submitted and is being processed.</p>
+<table class="table">
+    <tr class="collapse">
+        <td>Order Index</td>
+        <td>{{result.index}}</td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>{{car.name}}</td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td>{{car.description}}</td>
+    </tr>
+    <tr>
+        <td>Price</td>
+        <td>{{car.price}} ETH</td>
+    </tr>
+    <tr>
+        <td>Buyer's Address</td>
+        <td>{{loginAddress}}</td>
+    </tr>
+    <tr>
+        <td>Processing Status</td>
+        <td>{{result.status}}</td>
+    </tr>
+</table>
+<br/>
+<a href="/" class="btn btn-primary">Back to home</a>
+{{/content}} {{/extend}}

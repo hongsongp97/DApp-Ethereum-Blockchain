@@ -1,0 +1,32 @@
+{{#extend "base" title='Car Trading System - Order Cancelled'}} {{#content "main-content"}}
+<h1>Order Cancelled</h1>
+<p>Your order has been cancelled.</p>
+<table class="table">
+    <tr class="collapse">
+        <td>Order Index</td>
+        <td>{{result.index}}</td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>{{order.car.name}}</td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td>{{order.car.description}}</td>
+    </tr>
+    <tr>
+        <td>Price</td>
+        <td>{{order.car.price}} ETH</td>
+    </tr>
+    <tr>
+        <td>Buyer's Address</td>
+        <td>{{order.buyerAddress}}</td>
+    </tr>
+    <tr>
+        <td>Processing Status</td>
+        <td>{{result.status}}</td>
+    </tr>
+</table>
+<br/>
+<a href="/orders" class="btn btn-primary">Back to orders</a>
+{{/content}} {{/extend}}

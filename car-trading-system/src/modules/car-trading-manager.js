@@ -137,6 +137,13 @@ class CarTradingManager {
     }
 
     /**
+     * Fetch seller's address.
+     */
+    async fetchSellerAddressAsync() {
+        this.sellerAddress = await this.getSellerAddressAsync();
+    }
+
+    /**
      * Create a new order.
      *
      * NOTE:

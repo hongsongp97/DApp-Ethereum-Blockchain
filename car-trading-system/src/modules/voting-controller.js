@@ -5,7 +5,7 @@ const VotingManager = require('./voting-manager');
 /**
  * A class to contain the routes for the voting application.
  */
-class MainController {
+class VotingController {
     /**
      * Create the controller.
      * @param {VotingManager} votingManager The voting manager.
@@ -37,7 +37,7 @@ class MainController {
     /**
      * Parse name parameter.
      * @param {string} nameParam The name parameter.
-     * @return {name} The parsed name.
+     * @return {string} The parsed name.
      */
     _parseNameParameter(nameParam) {
         if (!nameParam) {
@@ -85,4 +85,4 @@ class MainController {
     }
 }
 
-module.exports = MainController;
+module.exports = VotingController;

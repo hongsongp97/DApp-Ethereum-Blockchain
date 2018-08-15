@@ -1,79 +1,15 @@
-{{#extend "base" title='Demo Voting'}} {{#content "main-content"}}
-<h2>List of candidates</h2>
-<br/> {{#if (equalsLength candidates 0)}}
-<p>No candidate available.</p>
-{{else}}
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Vote Count</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each candidates}}
-        <tr>
-            <td>{{add @index 1}}</td>
-            <td>{{this.name}}</td>
-            <td>{{this.votesCount}}</td>
-            <td>
-                <form class="candidate-actions-form" action="" method="POST">
-                    <input type="hidden" name="index" value="{{@index}}" />
-                    <div class="btn-group">
-                        <button type="button" class="vote-link btn btn-info btn-sm">Vote</button>
-                        <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="reset-vote-count-link dropdown-item text-warning" href="#">Reset</a>
-                            <a class="remove-candidate-link dropdown-item text-danger" href="#">Remove</a>
-                        </div>
-                    </div>
-                </form>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{/if}}
-<hr/>
-<h2>Add candidate</h2>
-<br/>
-<form action="/addCandidate" method="POST" class="form-inline">
-    <label for="name-input" class="mr-2">Name</label>
-    <input id="name-input" class="form-control mr-2" type="text" name="name" placeholder="Enter name" required="required" />
-    <button type="submit" class="btn btn-primary">Add</button>
-</form>
-<hr/>
-<h2>Other actions</h2>
-<br/>
-<form action="" method="POST" class="other-actions-form form-inline">
-    <button type="button" class="reset-all-votes-link btn btn-warning mr-2">Reset all votes</button>
-    <button type="button" class="clear-all-candidates-link btn btn-danger">Remove all candidates</button>
-</form>
-{{/content}} {{#content "custom-scripts"}}
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('form.candidate-actions-form').each(function (index, form) {
-            $(form).find('button.vote-link').click(function () {
-                $(form).attr('action', '/vote').submit();
-            });
-            $(form).find('a.reset-vote-count-link').click(function () {
-                $(form).attr('action', '/resetVoteCount').submit();
-            });
-            $(form).find('a.remove-candidate-link').click(function () {
-                $(form).attr('action', '/removeCandidate').submit();
-            });
-        });
-        var otherActionsForm = $('form.other-actions-form');
-        $(otherActionsForm).find('button.reset-all-votes-link').click(function () {
-            $(otherActionsForm).attr('action', '/resetAllVotes').submit();
-        });
-        $(otherActionsForm).find('button.clear-all-candidates-link').click(function () {
-            $(otherActionsForm).attr('action', '/clearAllCandidates').submit();
-        });
-    });
-</script> {{/content}} {{/extend}}
+{{#extend "base" title='Car Trading System - Home'}} {{#content "main-content"}}
+    <div class="car-area d-flex justify-content-around">
+        {{#each cars}} {{#gt this.quantity 0}}
+        <div class="card mx-1">
+            <img class="card-img-top" src="/images/{{this.imageFileName}}" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text">{{this.description}}</p>
+                <p class="price">Price: {{this.price}} ETH</p>
+                <a href="/buy?carId={{this.carId}}" ><button class="btn btn-info btn-buy">Buy</button></a>
+            </div>
+        </div>
+        {{/gt}} {{/each}}
+    </div>
+{{/content}} {{/extend}}

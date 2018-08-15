@@ -1,0 +1,22 @@
+{{#extend "base" title='Car Trading System - Login'}} {{#content "main-content"}}
+<form action="/login" method="POST">
+    <h3>Login</h1>
+    {{#if redirectUrl}}
+        <input type="hidden" name="redirectUrl" value="{{redirectUrl}}"/>
+    {{/if}}
+    <div class="form-group">
+        <label for="addressInput">Address:</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">0x</span>
+            </div>
+            <input type="text" id="addressInput" name="address" value="{{address}}" required="required" pattern="^[0-9A-Fa-f]{40}$" title="Address must be a 160-bit hex string." class="form-control" placeholder="ABCDEF..." aria-label="Address" aria-describedby="basic-addon1">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+    <br/><br/>
+    {{#if errorMessage}}
+        <p class="text-danger">{{errorMessage}}</p>
+    {{/if}}
+</form>
+{{/content}} {{/extend}}

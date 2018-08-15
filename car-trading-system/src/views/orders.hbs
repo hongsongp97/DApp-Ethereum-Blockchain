@@ -1,0 +1,39 @@
+{{#extend "base" title='Car Trading System - View Orders'}} {{#content "main-content"}}
+<h3>{{#if isSeller}}All Received Orders{{else}}All Submitted Orders{{/if}}</h3>
+<br/>
+{{#if (isEmpty orders)}}
+<p>There is no order to display.</p>
+{{else}}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Buyer's Address</th>
+            <th>Car Name</th>
+            <th>Car Price</th>
+            <th>Processing Status</th>
+            {{#if isSeller}}<th>Actions</th>{{/if}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#each orders}}
+        <tr>
+            <td>{{add @index 1}}</td>
+            <td>{{this.buyerAddress}}</td>
+            <td>{{this.car.name}}</td>
+            <td>{{this.car.price}} ETH</td>
+            <td>{{this.status}}</td>
+            {{#if ../isSeller}}
+            <td>
+                {{#if (eq this.status 'Pending')}}
+                <a href="/confirm?orderIndex={{this.index}}" class="btn btn-sm btn-info">Confirm</a>
+                <a href="/cancel?orderIndex={{this.index}}" class="btn btn-sm btn-danger">Cancel</a>
+                {{/if}}
+            </td>
+            {{/if}}
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/if}}
+{{/content}} {{/extend}}
