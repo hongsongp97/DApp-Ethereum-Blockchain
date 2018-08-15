@@ -7,18 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "tempServer.js",
-            "program": "${workspaceFolder}/src/tempServer.js",
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "deploymentController.js",
-            "program": "${workspaceFolder}/src/controller/deploymentController.js",
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Start Server (Remote)",
             "program": "${workspaceFolder}/src/server.js",
             "args": ["config.remote.json"]
@@ -33,7 +21,6 @@
         {
             "type": "node",
             "request": "launch",
-            "console": "externalTerminal",
             "name": "Deploy Contract (Remote)",
             "program": "${workspaceFolder}/src/deploy-contract.js",
             "args": ["config.remote.json"]
@@ -41,7 +28,6 @@
         {
             "type": "node",
             "request": "launch",
-            "console": "externalTerminal",
             "name": "Deploy Contract (Local)",
             "program": "${workspaceFolder}/src/deploy-contract.js",
             "args": ["config.local.json"]
