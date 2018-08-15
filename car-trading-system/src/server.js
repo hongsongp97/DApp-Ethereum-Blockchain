@@ -149,7 +149,7 @@ class CarTradingApplication {
     startExpressServer() {
         let localAddress = `http://localhost:${this.configuration.express.port}${this.configuration.express.routerMountPath}`;
         this.server.listen(this.configuration.express.port, () => {
-            console.log(`Listening at ${localAddress}`);
+            console.log(`\nListening at ${localAddress}`);
         });
     }
 
@@ -182,7 +182,6 @@ async function configureHandlebarsEngineAsync(partialsDirectory) {
     });
     require('handlebars-layouts').register(hbs.handlebars);
     console.log(`Registered Handlebars helpers.`);
-    
 }
 
 /**
