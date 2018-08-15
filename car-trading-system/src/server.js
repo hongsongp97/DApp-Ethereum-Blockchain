@@ -56,6 +56,7 @@ class CarTradingApplication {
     _initializeWeb3() {
         let provider = new Web3.providers.HttpProvider(this.defaultNetwork.rpcEndpoint);
         this.web3 = new Web3(provider);
+        console.log('Web3 initialized.');
     }
 
     /**
@@ -74,7 +75,9 @@ class CarTradingApplication {
             gas: this.defaultNetwork.defaultGas,
             gasPrice: this.defaultNetwork.defaultGasPrice,
         });
+        console.log('CarTradingManager initialized.');
         await this.carTradingManager.fetchSellerAddressAsync();
+        console.log('Fetched seller\'s address from contract.');
     }
 
     /**
@@ -85,6 +88,7 @@ class CarTradingApplication {
             this.expressConfig.dataDirectory,
             defaultParams.defaultDataFileName
         )));
+        console.log('CarDao initialized.');
     }
 
     /**
@@ -92,6 +96,7 @@ class CarTradingApplication {
      */
     _initializeCarTradingController() {
         this.carTradingController = new CarTradingController(this.carTradingManager, this.carDao);
+        console.log('CarTradingController initialized.');
     }
 
     /**
@@ -104,13 +109,18 @@ class CarTradingApplication {
             resave: false,
             saveUninitialized: false,
         }));
+        console.log('Enabled session for Express.');
         this.server.use(express.urlencoded({extended: false}));
         this.server.use(cookieParser());
-        this.server.set('views', path.resolve(this.configuration.express.viewsDirectory));
+        console.log('Parsers configured.');
+        this.server.set('views', path.resolve(this.expressConfig.viewsDirectory));
         this.server.set('view engine', 'hbs');
-        this.server.use(express.static(path.resolve(this.configuration.express.staticAssetsDirectory)));
-        this.server.use(express.static(path.resolve(this.configuration.express.dataDirectory)));
-        this.server.use(this.configuration.express.routerMountPath, this.carTradingController.router);
+        console.log('View & view engine configured.');
+        this.server.use(express.static(path.resolve(this.expressConfig.staticAssetsDirectory)));
+        this.server.use(express.static(path.resolve(this.expressConfig.dataDirectory)));
+        console.log('Static assets configured.');
+        this.server.use(this.expressConfig.routerMountPath, this.carTradingController.router);
+        console.log(`Mounted CarTradingController routes to ${this.expressConfig.routerMountPath}.`);
         this.server.use((err, req, res, next) => {
             console.error(err);
             res.status(500);
@@ -119,6 +129,7 @@ class CarTradingApplication {
                 errorMessage: err.message,
             });
         });
+        console.log('Error handler configured.');
     }
 
     /**
@@ -164,11 +175,14 @@ async function configureHandlebarsEngineAsync(partialsDirectory) {
             reject(err);
         });
     });
+    console.log(`Registered Handlebars partials in ${path.resolve(partialsDirectory)}.`);
     hbs.registerHelper('ternary', require('handlebars-helper-ternary'));
     require('handlebars-helpers')({
         handlebars: hbs.handlebars,
     });
     require('handlebars-layouts').register(hbs.handlebars);
+    console.log(`Registered Handlebars helpers.`);
+    
 }
 
 /**
